@@ -9,15 +9,35 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Yajra\DataTables\Facades\DataTables;
+
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user = User::latest()->get();
+        if ($request->ajax()) {
+
+            $data = User::orderBy('id', 'desc');
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('roles', function ($row) {
+                    return $row->getRoleNames()->map(function ($role) {
+                        return '<span class="badge badge-success">' . $role . '</span>';
+                    })->implode(' ');
+                })
+                ->addColumn('action', function ($row) {
+                    $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
+                    return $btn;
+                })
+                ->rawColumns(['action','roles'])
+                ->make(true);
+        }
+
 
         $roles = Role::pluck('name', 'name')->all();
-        return view('admin.index', compact('user', 'roles'));
+        return view('admin.index', compact('roles'));
     }
 
     public function store(Request $request)

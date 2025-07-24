@@ -2,9 +2,10 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\RoleController;
 
 Route::get('/', function () {
-    if (auth()->check()) {
+    if (Auth::check()) {
         return redirect('/home');
     } else {
         return redirect('/login');
@@ -34,7 +35,7 @@ Route::group([
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
 ], function () {
-    Route::get('/admin', ['uses' => 'AdminController@index'])->name('admin_list');
+    Route::get('/admin', ['uses' => 'AdminController@index'])->name('admin.index');
     Route::post('/admin/store', ['uses' => 'AdminController@store'])->name('admin.store');
    
 

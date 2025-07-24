@@ -14,61 +14,64 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table table-striped" id="admin_table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Actions</th>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($user as $admin)
-                                    <tr>
-                                        <td>{{ $admin->id }}</td>
-                                        <td>{{ $admin->name }}</td>
-                                        <td>{{ $admin->email }}</td>
-                                        <td>
-                                            @if (!empty($admin->getRoleNames()))
-                                                @foreach ($admin->getRoleNames() as $r)
-                                                    <label class="badge bg-success">{{ $r }}</label>
-                                                @endforeach
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{-- <a href="{{ route('admin.edit', $admin->id) }}"
-                                                class="btn btn-sm btn-primary">Edit</a>
-                                            <form action="{{ route('admin.destroy', $admin->id) }}" method="POST"
-                                                style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                            </form> --}}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="dt-responsive table-responsive">
+                    <table class="table table-bordered table-striped" id="admin_table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th width="100px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
+
             </div>
         </div>
 
     </div>
     @include('admin.create')
-    @include('layouts.datatablecdn')
-    <script>
-        $('#admin_table').DataTable();
-    </script>
 
     <script>
         $(document).ready(function() {
-           
+            $(function() {
+
+                var table = $('#admin_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('admin.index') }}",
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'email',
+                            name: 'email'
+                        },
+                        {
+                            data: 'roles',
+                            name: 'roles'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+
+            });
+
             $('#create_admin_form').ajaxForm({
                 beforeSubmit: function() {
                     $('#create_admin_form')[0].reset();
@@ -76,9 +79,7 @@
                 },
                 success: function(res) {
                     showSuccessModal(res.message);
-                    // Reload the DataTable to fetch new data
-                    $('#admin_table').DataTable().draw();
-                    // $('#admin_table').DataTable().rows.add(res.data).draw();
+                    $('#admin_table').DataTable().ajax.reload();
                 }
             });
         });

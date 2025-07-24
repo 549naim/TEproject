@@ -1,7 +1,3 @@
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_admin">
-    Launch demo modal
-</button>
-
 <div class="modal fade" id="create_admin" tabindex="-1" aria-labelledby="create_adminLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
