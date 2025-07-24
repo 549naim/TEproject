@@ -30,9 +30,9 @@ class AdminSeeder extends Seeder
         }
 
         $user = User::firstOrCreate(
-            ['email' => 'superadmin@gmail.com'],
+            ['email' => 'superadminuser@gmail.com'],
             [
-                'name' => 'SuperAdmin',
+                'name' => 'SuperAdminsuperadminuser',
                 'password' => Hash::make('@superadmin@'),
                 'email_verified_at' => now(),
                 'created_at' => now(),

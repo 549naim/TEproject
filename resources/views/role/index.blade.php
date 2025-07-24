@@ -3,7 +3,8 @@
 @section('content')
     <div class="pc-content">
         <div class="row">
-            <form action="{{ route('roles.update', 10000) }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('roles.update', 10000) }}" method="post" enctype="multipart/form-data"
+                id="role_permission_edit_form">
                 @csrf
                 @method('PUT')
                 <div class="d-flex flex-row ">
@@ -70,9 +71,10 @@
                         <h6 class="m-0 font-weight-bold text-primary">Roles</h6>
                     </div>
                     <div class="dt-responsive table-responsive p-3">
-                        <table class="table align-items-center table-striped table-bordered nowrap" id="dataTable">
+                        <table class="table align-items-center table-striped table-bordered nowrap" id="data_table_role">
                             <thead class="thead-light">
                                 <tr>
+                                    <th>No</th>
                                     <th>Name</th>
                                     <th>Action</th>
 
@@ -80,22 +82,7 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($roles as $item)
-                                    <tr>
-                                        <td>{{ $item->name }}</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#edit_role_name" id="edit_role" data-id="{{ $item->id }}">
-                                                <i class="fas fa-pen"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-danger btn-sm" id="delete_role"
-                                                data-id="{{ $item->id }}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
 
-                                    </tr>
-                                @endforeach
 
 
                             </tbody>
@@ -109,9 +96,11 @@
                         <h6 class="m-0 font-weight-bold text-primary">Permission</h6>
                     </div>
                     <div class="dt-responsive table-responsive p-3">
-                        <table class="table align-items-center table-striped table-bordered nowrap" id="dataTableHover">
+                        <table class="table align-items-center table-striped table-bordered nowrap"
+                            id="data_table_permission">
                             <thead class="thead-light">
                                 <tr>
+                                    <th>No</th>
                                     <th>Name</th>
                                     <th>Position</th>
 
@@ -119,23 +108,6 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($permissions as $item)
-                                    <tr>
-                                        <td>{{ $item->name }}</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#edit_permission_name" id="edit_permission_name"
-                                                data-id="{{ $item->id }}">
-                                                <i class="fas fa-pen"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-danger btn-sm" id="delete_permission"
-                                                data-id="{{ $item->id }}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-
-                                    </tr>
-                                @endforeach
 
                             </tbody>
                         </table>
@@ -147,12 +119,79 @@
 
 
     </div>
-    @include('layouts.datatablecdn')
+
     <script>
         $(document).ready(function() {
-            // ID From dataTable 
-            $('#dataTableHover').DataTable(); // ID From dataTable with Hover
-            $('#dataTable').DataTable(); // ID From dataTable with Hover
+            $(function() {
+
+                var table = $('#data_table_role').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('role.list') }}",
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+
+            });
+            $(function() {
+
+                var table = $('#data_table_permission').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('permission.list') }}",
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ]
+                });
+
+            });
+            $('#role_permission_edit_form').ajaxForm({
+                success: function(res) {
+                    showSuccessModal(res.message);
+                }
+            });
+            $('#create_role_form').ajaxForm({
+                success: function(res) {
+                    showSuccessModal(res.message);
+                    $('#create_role').modal('hide');
+                    $('#create_role_form')[0].reset();
+                    $('#data_table_role').DataTable().ajax.reload();
+                }
+            });
+            $('#create_permission_form').ajaxForm({
+                success: function(res) {
+                    showSuccessModal(res.message);
+                    $('#create_permission').modal('hide');
+                    $('#create_permission_form')[0].reset();
+                    $('#data_table_permission').DataTable().ajax.reload();
+                }
+            });
+
         });
     </script>
 
@@ -161,16 +200,16 @@
 
             $('body').on('click', '#edit_role', function(e) {
                 $('#edit_role_form')[0].reset();
-                var userId = $(this).data("id");
+                var roleId = $(this).data("id");
 
                 $.ajax({
                     type: 'get',
-                    url: '/role-edit/' + userId,
+                    url: '/role-edit/' + roleId,
                     success: function(data) {
 
                         $('#role_edit_form').removeClass('d-none');
                         $('#edit_role_input').val(data.role.name);
-                        $('#edit_role_id').val(userId);
+                        $('#edit_role_id').val(roleId);
 
                     },
                     error: function(error) {}
@@ -192,12 +231,12 @@
                         role_id: role_id
                     },
                     success: function(data) {
-                        location.reload();
+                        $('#edit_role_name').modal('hide');
+                        $('#edit_role_form')[0].reset();
+                        $('#data_table_role').DataTable().ajax.reload();
+                        showSuccessModal(data.message);
 
                     },
-                    error: function(error) {
-                        location.reload();
-                    }
                 });
 
             });
@@ -209,34 +248,32 @@
 
 
             $('body').on('click', '#delete_role', function() {
-                var userId = $(this).data("id");
+                var roleId = $(this).data("id");
                 // window.location.href = '/role-delete/' + userId;
                 $.ajax({
                     type: 'get',
-                    url: '/role-delete/' + userId,
+                    url: '/role-delete/' + roleId,
                     success: function(data) {
-                        location.reload();
+                        $('#data_table_role').DataTable().ajax.reload();
+                        showSuccessModal(data.message);
 
                     },
-                    error: function(error) {
-                        location.reload();
-                    }
                 });
             });
 
 
             $('body').on('click', '#edit_permission_name', function(e) {
                 $('#edit_role_form')[0].reset();
-                var userId = $(this).data("id");
+                var permissionId = $(this).data("id");
 
                 $.ajax({
                     type: 'get',
-                    url: '/permission-edit/' + userId,
+                    url: '/permission-edit/' + permissionId,
                     success: function(data) {
 
 
                         $('#edit_permission_input').val(data.permission.name);
-                        $('#edit_permission_id').val(userId);
+                        $('#edit_permission_id').val(permissionId);
 
 
                     },
@@ -262,12 +299,12 @@
                         permission_id: permission_id
                     },
                     success: function(data) {
-                        location.reload();
+                        $('#edit_permission_name').modal('hide');
+                        $('#edit_permission_form')[0].reset();
+                        $('#data_table_permission').DataTable().ajax.reload();
+                        showSuccessModal(data.message);
 
                     },
-                    error: function(error) {
-                        location.reload();
-                    }
                 });
 
             });
@@ -279,12 +316,10 @@
                     type: 'get',
                     url: '/permission-delete/' + userId,
                     success: function(data) {
-                        location.reload();
+                        $('#data_table_permission').DataTable().ajax.reload();
+                        showSuccessModal(data.message);
 
                     },
-                    error: function(error) {
-                        location.reload();
-                    }
                 });
             });
 
@@ -295,48 +330,39 @@
 
                 $('.form-check-input').prop('checked', false);
 
-                var role_id = $(this).val();
-
-                $.ajax({
-                    type: 'get',
-                    url: '/role_permission',
-                    data: {
-                        role_id: role_id
-                    },
-                    success: function(data) {
-
-
-                        $(data.rolePermissions).each(function(id, permission) {
-
-                            $('#permission' + permission).prop('checked', true);
-
-                        });
-
-                    },
-                    error: function(error) {}
-                });
-            })
-
-        });
-    </script>
-
-    <script>
-        $("#permission_cancel").click(function() {
-            $('#permission_edit_form').addClass('d-none');
-            $('#permission_create_form').removeClass('d-none');
-        });
-
-        $('body').on('click', '#delete_permission', function() {
-            var userId = $(this).data("id");
-            $.ajax({
-                type: 'get',
-                url: '/permission-delete/' + userId,
-                success: function(data) {
-                    $('.data_table_permission').DataTable().ajax.reload();
-                    successModal(data.message);
-                },
-                error: function(error) {}
             });
         });
+
+
+
+        $('.form-check-input').prop('checked', false);
+        $('#roleSelect').change(function() {
+
+        $('.form-check-input').prop('checked', false);
+
+        var role_id = $(this).val();
+
+        $.ajax({
+            type: 'get',
+            url: '/role_permission',
+            data: {
+                role_id: role_id
+            },
+            success: function(data) {
+
+
+                $(data.rolePermissions).each(function(id, permission) {
+
+                    $('#permission' + permission).prop('checked', true);
+
+                });
+
+            },
+            error: function(error) {}
+        });
+        })
+
+        
     </script>
+
 @endsection

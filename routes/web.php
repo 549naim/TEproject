@@ -30,6 +30,8 @@ Route::group([
     Route::get('/permission-edit/{id}', ['uses' => 'RoleController@permission_edit'])->name('permission-edit');
     Route::post('/role-update', ['uses' => 'RoleController@role_update'])->name('role-update');
     Route::post('/permission-update', ['uses' => 'RoleController@permission_update'])->name('permission-update');
+    Route::get('/role-list', ['uses' => 'RoleController@roleList'])->name('role.list');
+    Route::get('/permission-list', ['uses' => 'RoleController@permissionList'])->name('permission.list');
 });
 
 Route::group([
