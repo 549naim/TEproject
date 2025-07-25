@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
             'role_create',
             'role_edit',
             'role_delete',
-            'role_permission-edit',
+            'role_permission_edit',
         ];
 
         foreach ($permissions as $permission) {

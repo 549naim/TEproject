@@ -42,9 +42,9 @@
                         </ul>
                     </li>
                     <li class="pc-item">
-                        <a href="../other/sample-page.html" class="pc-link">
-                            <span class="pc-micon"><i class="ti ti-brand-chrome"></i></span>
-                            <span class="pc-mtext">Sample page</span>
+                        <a href="{{ route('questions.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-question-circle"></i></span>
+                            <span class="pc-mtext">Question Upload</span>
                         </a>
                     </li>
                 </ul>

@@ -242,23 +242,20 @@
             });
 
 
-
-
-
-
-
             $('body').on('click', '#delete_role', function() {
                 var roleId = $(this).data("id");
-                // window.location.href = '/role-delete/' + userId;
-                $.ajax({
-                    type: 'get',
-                    url: '/role-delete/' + roleId,
-                    success: function(data) {
-                        $('#data_table_role').DataTable().ajax.reload();
-                        showSuccessModal(data.message);
+                showConfirmDeleteModal("Are you sure you want to delete this role?", function() {
+                    $.ajax({
+                        type: 'get',
+                        url: '/role-delete/' + roleId,
+                        success: function(data) {
+                            $('#data_table_role').DataTable().ajax.reload();
+                            showSuccessModal(data.message);
 
-                    },
+                        },
+                    });
                 });
+
             });
 
 
@@ -311,16 +308,18 @@
 
             $('body').on('click', '#delete_permission', function() {
                 var userId = $(this).data("id");
-                // window.location.href = '/role-delete/' + userId;
-                $.ajax({
-                    type: 'get',
-                    url: '/permission-delete/' + userId,
-                    success: function(data) {
-                        $('#data_table_permission').DataTable().ajax.reload();
-                        showSuccessModal(data.message);
+                showConfirmDeleteModal("Are you sure you want to delete this permission?", function() {
+                    $.ajax({
+                        type: 'get',
+                        url: '/permission-delete/' + userId,
+                        success: function(data) {
+                            $('#data_table_permission').DataTable().ajax.reload();
+                            showSuccessModal(data.message);
 
-                    },
+                        },
+                    });
                 });
+
             });
 
 
@@ -338,31 +337,28 @@
         $('.form-check-input').prop('checked', false);
         $('#roleSelect').change(function() {
 
-        $('.form-check-input').prop('checked', false);
+            $('.form-check-input').prop('checked', false);
 
-        var role_id = $(this).val();
+            var role_id = $(this).val();
 
-        $.ajax({
-            type: 'get',
-            url: '/role_permission',
-            data: {
-                role_id: role_id
-            },
-            success: function(data) {
+            $.ajax({
+                type: 'get',
+                url: '/role_permission',
+                data: {
+                    role_id: role_id
+                },
+                success: function(data) {
 
 
-                $(data.rolePermissions).each(function(id, permission) {
+                    $(data.rolePermissions).each(function(id, permission) {
 
-                    $('#permission' + permission).prop('checked', true);
+                        $('#permission' + permission).prop('checked', true);
 
-                });
+                    });
 
-            },
-            error: function(error) {}
-        });
+                },
+                error: function(error) {}
+            });
         })
-
-        
     </script>
-
 @endsection

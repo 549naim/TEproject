@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\RoleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\RoleController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -39,7 +39,13 @@ Route::group([
 ], function () {
     Route::get('/admin', ['uses' => 'AdminController@index'])->name('admin.index');
     Route::post('/admin/store', ['uses' => 'AdminController@store'])->name('admin.store');
-   
+    Route::get('/admin_edit/{id}', ['uses' => 'AdminController@admin_edit'])->name('admin_edit');
+    Route::post('/admin_update', ['uses' => 'AdminController@admin_update'])->name('admin_update');
+    Route::get('/admin_delete/{id}', ['uses' => 'AdminController@admin_delete'])->name('admin_delete');
+});
 
-
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+], function () {
+    Route::resource('questions', QuestionController::class);
 });

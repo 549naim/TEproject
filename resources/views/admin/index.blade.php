@@ -36,6 +36,7 @@
 
     </div>
     @include('admin.create')
+    @include('admin.edit')
 
     <script>
         $(document).ready(function() {
@@ -81,6 +82,85 @@
                     showSuccessModal(res.message);
                     $('#admin_table').DataTable().ajax.reload();
                 }
+            });
+            // Show Edit Modal
+            $('body').on('click', '#edit_admin', function() {
+                const adminId = $(this).data('id');
+
+                $.ajax({
+                    url: `/admin_edit/${adminId}`,
+                    type: 'GET',
+                    success: function(res) {
+                        $('#admin_id').val(res.data.id);
+                        $('#admin_name').val(res.data.name);
+                        $('#admin_email').val(res.data.email);
+
+                        // Populate roles
+                        let allRoles = @json($roles); // available from blade
+                        let userRoles = res.roles; // ✅ comes from controller now
+                        let roleOptions = '';
+
+                        $.each(allRoles, function(key, value) {
+                            const selected = userRoles.includes(key) ? 'selected' : '';
+                            roleOptions +=
+                                `<option value="${key}" ${selected}>${value}</option>`;
+                        });
+
+                        $('#admin_roles').html(roleOptions);
+                        $('#edit_admin_modal').modal('show');
+                    },
+                    error: function() {
+                        // alert("Failed to load admin data!");
+                    }
+                });
+            });
+
+
+            // Update Admin
+            $('#edit_admin_form').on('submit', function(e) {
+                e.preventDefault();
+
+                const formData = {
+                    id: $('#admin_id').val(),
+                    name: $('#admin_name').val(),
+                    email: $('#admin_email').val(),
+                    roles: $('#admin_roles').val(),
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                };
+
+                $.ajax({
+                    url: "{{ route('admin_update') }}",
+                    type: 'POST',
+                    data: formData,
+                    success: function(res) {
+                        if (res.success) {
+                            $('#edit_admin_modal').modal('hide');
+                            showSuccessModal(res.message);
+                            $('#admin_table').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function(xhr) {
+
+                    }
+                });
+            });
+            $('body').on('click', '#delete_admin', function() {
+                const adminId = $(this).data('id');
+                showConfirmDeleteModal("Are you sure you want to delete this admin?", function() {
+                    $.ajax({
+                        url: `/admin_delete/${adminId}`,
+                        type: 'GET',
+                        success: function(res) {
+                            if (res.success) {
+                                showSuccessModal(res.message);
+                                $('#admin_table').DataTable().ajax.reload();
+                            }
+                        },
+                        error: function() {
+                            // alert('Delete failed!');
+                        }
+                    });
+                });
             });
         });
     </script>
