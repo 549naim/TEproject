@@ -49,3 +49,40 @@ Route::group([
 ], function () {
     Route::resource('questions', QuestionController::class);
 });
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+], function () {
+    Route::get('/courses', ['uses' => 'CourseUploadController@index'])->name('courses.index');
+    Route::post('/courses/import', ['uses' => 'CourseUploadController@importCourseData'])->name('courses.import');
+    Route::get('/departments', ['uses' => 'CourseUploadController@departmentIndex'])->name('departments.index');
+    Route::post('/departments_store', ['uses' => 'CourseUploadController@departmentStore'])->name('departments.store');
+    Route::get('/departments/{id}', ['uses' => 'CourseUploadController@departmentShow'])->name('departments.show');
+    Route::post('/departments_update', ['uses' => 'CourseUploadController@departmentUpdate'])->name('departments.update');
+    Route::get('/departments_delete/{id}', ['uses' => 'CourseUploadController@departmentDelete'])->name('departments.delete');
+    
+});
+
+Route::group([
+    'namespace' => 'App\Http\Controllers\Admin',
+], function () {
+    Route::get('/departments', ['uses' => 'PortalController@departmentIndex'])->name('departments.index');
+    Route::post('/departments_store', ['uses' => 'PortalController@departmentStore'])->name('departments.store');
+    Route::get('/departments/{id}', ['uses' => 'PortalController@departmentShow'])->name('departments.show');
+    Route::post('/departments_update', ['uses' => 'PortalController@departmentUpdate'])->name('departments.update');
+    Route::get('/departments_delete/{id}', ['uses' => 'PortalController@departmentDelete'])->name('departments.delete');
+
+    Route::get('/batches', ['uses' => 'PortalController@batchIndex'])->name('batches.index');
+    Route::post('/batches_store', ['uses' => 'PortalController@batchStore'])->name('batches.store');
+    Route::get('/batches/{id}', ['uses' => 'PortalController@batchShow'])->name('batches.show');
+    Route::post('/batches_update', ['uses' => 'PortalController@batchUpdate'])->name('batches.update');
+    Route::get('/batches_delete/{id}', ['uses' => 'PortalController@batchDelete'])->name('batches.delete');
+
+    Route::get('/courses', ['uses' => 'PortalController@courseIndex'])->name('courses.index');
+    Route::post('/courses_store', ['uses' => 'PortalController@courseStore'])->name('courses.store');
+    Route::get('/courses/{id}', ['uses' => 'PortalController@courseShow'])->name('courses.show');
+    Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
+    Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
+
+    
+
+});

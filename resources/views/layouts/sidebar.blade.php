@@ -41,10 +41,32 @@
 
                         </ul>
                     </li>
+                    <li class="pc-item pc-hasmenu">
+                        <a href="#!" class="pc-link"><span class="pc-micon"><i class="fas fa-user-cog"></i></span><span
+                                class="pc-mtext">Portal
+                                Management</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+                        <ul class="pc-submenu">
+                            <li class="pc-item"><a class="pc-link" href="{{ route('departments.index') }}">Department</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('batches.index') }}">Batch</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('courses.index') }}">Course</a></li>
+                            <li class="pc-item"><a class="pc-link" href="">Course Wise Teacher</a></li>
+                            <li class="pc-item"><a class="pc-link" href="">Course Wise Student</a></li>
+                            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('roles.index') }}">Role & Permission</a></li> --}}
+
+
+                        </ul>
+                    </li>
                     <li class="pc-item">
                         <a href="{{ route('questions.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="fas fa-question-circle"></i></span>
                             <span class="pc-mtext">Question Upload</span>
+                        </a>
+                    </li>
+
+                    <li class="pc-item">
+                        <a href="{{ route('courses.index') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-mtext">Course Upload</span>
                         </a>
                     </li>
                 </ul>
