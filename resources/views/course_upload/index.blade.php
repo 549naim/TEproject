@@ -127,7 +127,7 @@
 
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
                 </form>
 
             </div>
@@ -136,6 +136,42 @@
 
     </div>
 
+
+    <script>
+        $(document).ready(function() {
+            var $form = $('#course_upload_form');
+            var $submitBtn = $form.find('button[type="submit"]');
+            var spinnerHtml = '<button type="button" class="btn btn-primary" disabled id="spinner-btn"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Uploading...</button>';
+
+            $form.ajaxForm({
+                beforeSubmit: function() {
+                    $submitBtn.hide();
+                    $submitBtn.after(spinnerHtml);
+                },
+                success: function(res) {
+                    $('#spinner-btn').remove();
+                    $form[0].reset();
+                    $submitBtn.show();
+                    showSuccessModal(res.message);
+                },
+                error: function(xhr) {
+                    $('#spinner-btn').remove();
+                     $form[0].reset();
+                    $submitBtn.show();
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
+                }
+            });
+        });
+    </script>
 
 
     <script>

@@ -34,8 +34,8 @@
         </div>
 
     </div>
-    {{-- @include('course.create')
-    @include('course.edit') --}}
+    @include('course.create')
+    @include('course.edit')
 
     <script>
         $(document).ready(function() {
@@ -77,17 +77,18 @@
                 success: function(res) {
                     showSuccessModal(res.message);
                     $('#course_table').DataTable().ajax.reload();
-                }
-            });
-
-            $('#edit_course_form').ajaxForm({
-                beforeSubmit: function() {
-                    $('#edit_course_form')[0].reset();
-                    $('#edit_course').modal('hide');
                 },
-                success: function(res) {
-                    showSuccessModal(res.message);
-                    $('#course_table').DataTable().ajax.reload();
+                error: function(xhr) {
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
                 }
             });
 
@@ -99,10 +100,11 @@
                     type: 'GET',
                     url: '/courses/' + courseId,
                     success: function(response) {
-                        $('#edit_course_input').val(response.data.course);
+                        console.log(response);
+
+                        $('#edit_course_input_name').val(response.name);
+                        $('#edit_course_input_code').val(response.code);
                         $('#edit_course_id').val(courseId);
-                        $('#edit_course_modal').modal('show');
-                        console.log("Set value:", response.data.course);
                     }
                 });
             });
@@ -112,13 +114,16 @@
                 e.preventDefault();
 
                 var courseId = $('#edit_course_id').val();
-                var courseVal = $('input[name="edit_course"]').val();
+                var courseName = $('#edit_course_input_name').val();
+                var courseCode = $('#edit_course_input_code').val();
 
                 $.ajax({
-                    url: '/courses/' + courseId,
-                    type: 'PUT',
+                    url: '/courses_update',
+                    type: 'POST',
                     data: {
-                        course: courseVal,
+                        id: courseId,
+                        name: courseName,
+                        code: courseCode ,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(res) {
@@ -127,7 +132,16 @@
                         $('#course_table').DataTable().ajax.reload();
                     },
                     error: function(xhr) {
-                        alert('Update failed');
+                        var errors = xhr.responseJSON?.errors;
+                        var errorMessage = '';
+                        if (errors) {
+                            $.each(errors, function(key, value) {
+                                errorMessage += value[0] + '\n';
+                            });
+                        } else {
+                            errorMessage = 'An error occurred. Please try again.';
+                        }
+                        showErrorModal(errorMessage);
                     }
                 });
             });
@@ -136,8 +150,8 @@
                 var courseId = $(this).data("id");
                 showConfirmDeleteModal("Are you sure you want to delete this course?", function() {
                     $.ajax({
-                        url: '/courses/' + courseId,
-                        type: 'DELETE',
+                        url: '/courses_delete/' + courseId,
+                        type: 'GET',
                         data: {
                             _token: '{{ csrf_token() }}'
                         },
@@ -146,12 +160,20 @@
                             $('#course_table').DataTable().ajax.reload();
                         },
                         error: function(xhr) {
-                            alert('Delete failed');
+                            var errors = xhr.responseJSON?.errors;
+                            var errorMessage = '';
+                            if (errors) {
+                                $.each(errors, function(key, value) {
+                                    errorMessage += value[0] + '\n';
+                                });
+                            } else {
+                                errorMessage = 'An error occurred. Please try again.';
+                            }
+                            showErrorModal(errorMessage);
                         }
                     });
                 });
             });
-
         });
     </script>
 @endsection

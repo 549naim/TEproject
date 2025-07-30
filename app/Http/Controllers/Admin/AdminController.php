@@ -3,6 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Batch;
+use App\Models\Course;
+use App\Models\CourseEvaluationComment;
+use App\Models\CourseEvaluationData;
+use App\Models\Department;
+use App\Models\Question;
+use App\Models\StudentWiseCourse;
+use App\Models\TeacherWiseCourse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +33,12 @@ class AdminController extends Controller
                         return '<span class="badge badge-success">' . $role . '</span>';
                     })->implode(' ');
                 })
+                ->addColumn('department', function ($row) {
+                    if ($row->department && isset($row->department->name)) {
+                        return '<span class="badge bg-info">' . e($row->department->name) . '</span>';
+                    }
+                    return '<span class="badge bg-secondary">N/A</span>';
+                })
                 ->addColumn('action', function ($row) {
                     $btn = '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#edit_admin_modal" id="edit_admin" data-id="' . $row->id . '">
                             <i class="fas fa-pen"></i>
@@ -35,7 +49,7 @@ class AdminController extends Controller
                         </button>';
                     return $btn;
                 })
-                ->rawColumns(['action', 'roles'])
+                ->rawColumns(['action', 'roles', 'department'])
                 ->make(true);
         }
 
@@ -103,5 +117,111 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Admin deleted successfully!'
         ]);
+    }
+
+    public function evaluation_student()
+    {
+        $user = Auth::user();
+        $batches = Batch::all();
+        $questions = Question::all();
+        return view('evaluation.student', compact('batches', 'user', 'questions'));
+    }
+
+    public function evaluation_student_course(Request $request)
+    {
+        $request->validate([
+            'year' => 'required',
+            'batch_id' => 'required',
+        ]);
+
+        $user = Auth::user();
+
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $user_id = $user->id;
+        $dept_id = $user->dept_id;
+
+        $courseIds = StudentWiseCourse::where('year', $year)
+            ->where('batch_id', $batch_id)
+            ->where('student_id', $user_id)
+            ->where('department_id', $dept_id)
+            ->pluck('course_id');
+
+        $courses = Course::whereIn('id', $courseIds)
+            ->get(['id', 'name', 'code'])
+            ->map(function ($course) use ($year, $batch_id, $dept_id, $user_id) {
+                $teacher = TeacherWiseCourse::where('course_id', $course->id)
+                    ->where('year', $year)
+                    ->where('batch_id', $batch_id)
+                    ->where('department_id', $dept_id)
+                    ->first();
+
+                $teacher_id = $teacher ? $teacher->teacher_id : null;
+
+                // Check if already evaluated
+                $alreadyEvaluated = CourseEvaluationData::where([
+                    'department_id' => $dept_id,
+                    'teacher_id' => $teacher_id,
+                    'student_id' => $user_id,
+                    'course_id' => $course->id,
+                    'year' => $year,
+                    'batch_id' => $batch_id,
+                ])->exists();
+
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'code' => $course->code,
+                    'department_id' => $dept_id,
+                    'teacher_id' => $teacher_id,
+                    'student_id' => $user_id,
+                    'year' => $year,
+                    'batch_id' => $batch_id,
+                    'evaluated' => $alreadyEvaluated,
+                ];
+            });
+
+        return response()->json($courses);
+    }
+
+    public function evaluation_student_store(Request $request)
+    {
+        $studentId = Auth::id();  // Currently logged in student
+
+        // Prepare common conditions to check duplication
+        $commonCheck = [
+            'department_id' => $request->department_id,
+            'teacher_id' => $request->teacher_id,
+            'student_id' => $studentId,
+            'course_id' => $request->course_id,
+            'year' => $request->year,
+            'batch_id' => $request->batch_id,
+        ];
+
+        $alreadyEvaluated = CourseEvaluationData::where($commonCheck)->exists();
+
+        if ($alreadyEvaluated) {
+            return response()->json(['message' => 'You have already evaluated this course.'], 409);  // 409 Conflict
+        }
+
+        $commonData = array_merge($commonCheck, [
+            'created_by' => $studentId,
+            'updated_by' => $studentId,
+        ]);
+
+        foreach ($request->ratings as $questionId => $ratting) {
+            CourseEvaluationData::create(array_merge($commonData, [
+                'question_id' => $questionId,
+                'ratting' => $ratting,
+            ]));
+        }
+
+        if (!empty($request->comment_data)) {
+            CourseEvaluationComment::create(array_merge($commonData, [
+                'comment_data' => $request->comment_data,
+            ]));
+        }
+
+        return response()->json(['message' => 'Evaluation submitted successfully']);
     }
 }

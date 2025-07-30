@@ -42,6 +42,13 @@ Route::group([
     Route::get('/admin_edit/{id}', ['uses' => 'AdminController@admin_edit'])->name('admin_edit');
     Route::post('/admin_update', ['uses' => 'AdminController@admin_update'])->name('admin_update');
     Route::get('/admin_delete/{id}', ['uses' => 'AdminController@admin_delete'])->name('admin_delete');
+    Route::get('/evaluation/teacher', ['uses' => 'AdminController@evaluation_teacher'])->name('evaluation.teacher');
+    Route::post('/evaluation/teacher', ['uses' => 'AdminController@evaluation_teacher_store'])->name('evaluation.teacher.store');
+
+
+    Route::get('/evaluation/student', ['uses' => 'AdminController@evaluation_student'])->name('evaluation.student');
+    Route::post('/evaluation/student/course', ['uses' => 'AdminController@evaluation_student_course'])->name('evaluation.student.course');
+    Route::post('/evaluation/student', ['uses' => 'AdminController@evaluation_student_store'])->name('evaluation.student.store');
 });
 
 Route::group([
@@ -52,7 +59,7 @@ Route::group([
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
 ], function () {
-    Route::get('/courses', ['uses' => 'CourseUploadController@index'])->name('courses.index');
+    Route::get('/courses_upload', ['uses' => 'CourseUploadController@index'])->name('courses.upload');
     Route::post('/courses/import', ['uses' => 'CourseUploadController@importCourseData'])->name('courses.import');
     Route::get('/departments', ['uses' => 'CourseUploadController@departmentIndex'])->name('departments.index');
     Route::post('/departments_store', ['uses' => 'CourseUploadController@departmentStore'])->name('departments.store');

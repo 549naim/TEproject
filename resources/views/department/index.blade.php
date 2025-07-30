@@ -77,17 +77,18 @@
                 success: function(res) {
                     showSuccessModal(res.message);
                     $('#department_table').DataTable().ajax.reload();
-                }
-            });
-
-            $('#edit_department_form').ajaxForm({
-                beforeSubmit: function() {
-                    $('#edit_department_form')[0].reset();
-                    $('#edit_department').modal('hide');
                 },
-                success: function(res) {
-                    showSuccessModal(res.message);
-                    $('#department_table').DataTable().ajax.reload();
+                error: function(xhr) {
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
                 }
             });
 
@@ -99,10 +100,11 @@
                     type: 'GET',
                     url: '/departments/' + departmentId,
                     success: function(response) {
-                        $('#edit_department_input').val(response.data.department);
+                        console.log(response);
+
+                        $('#edit_department_input_name').val(response.name);
+                        $('#edit_department_input_code').val(response.code);
                         $('#edit_department_id').val(departmentId);
-                        $('#edit_department_modal').modal('show');
-                        console.log("Set value:", response.data.department);
                     }
                 });
             });
@@ -112,13 +114,16 @@
                 e.preventDefault();
 
                 var departmentId = $('#edit_department_id').val();
-                var departmentVal = $('input[name="edit_department"]').val();
+                var departmentName = $('#edit_department_input_name').val();
+                var departmentCode = $('#edit_department_input_code').val();
 
                 $.ajax({
-                    url: '/departments/' + departmentId,
-                    type: 'PUT',
+                    url: '/departments_update',
+                    type: 'POST',
                     data: {
-                        department: departmentVal,
+                        id: departmentId,
+                        name: departmentName,
+                        code: departmentCode,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(res) {
@@ -127,7 +132,16 @@
                         $('#department_table').DataTable().ajax.reload();
                     },
                     error: function(xhr) {
-                        alert('Update failed');
+                        var errors = xhr.responseJSON?.errors;
+                        var errorMessage = '';
+                        if (errors) {
+                            $.each(errors, function(key, value) {
+                                errorMessage += value[0] + '\n';
+                            });
+                        } else {
+                            errorMessage = 'An error occurred. Please try again.';
+                        }
+                        showErrorModal(errorMessage);
                     }
                 });
             });
@@ -136,8 +150,8 @@
                 var departmentId = $(this).data("id");
                 showConfirmDeleteModal("Are you sure you want to delete this department?", function() {
                     $.ajax({
-                        url: '/departments/' + departmentId,
-                        type: 'DELETE',
+                        url: '/departments_delete/' + departmentId,
+                        type: 'GET',
                         data: {
                             _token: '{{ csrf_token() }}'
                         },
@@ -146,7 +160,16 @@
                             $('#department_table').DataTable().ajax.reload();
                         },
                         error: function(xhr) {
-                            alert('Delete failed');
+                            var errors = xhr.responseJSON?.errors;
+                            var errorMessage = '';
+                            if (errors) {
+                                $.each(errors, function(key, value) {
+                                    errorMessage += value[0] + '\n';
+                                });
+                            } else {
+                                errorMessage = 'An error occurred. Please try again.';
+                            }
+                            showErrorModal(errorMessage);
                         }
                     });
                 });

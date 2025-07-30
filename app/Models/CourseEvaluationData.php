@@ -4,20 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class StudentWiseCourse extends Model
+class CourseEvaluationData extends Model
 {
     protected $fillable = [
+        'department_id',
+        'teacher_id',
         'student_id',
         'course_id',
-        'department_id',
+        'question_id',
+        'ratting',
         'year',
         'batch_id',
         'created_by',
         'updated_by',
     ];
-
-    public function course()
-    {
-        return $this->belongsTo(Course::class, 'course_id');
-    }
 }

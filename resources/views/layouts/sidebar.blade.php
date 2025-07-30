@@ -35,7 +35,7 @@
                                 class="pc-mtext">User
                                 Management</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
                         <ul class="pc-submenu">
-                            <li class="pc-item"><a class="pc-link" href="{{ route('admin.index') }}">Admin Management</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('admin.index') }}">User Management</a></li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('roles.index') }}">Role & Permission</a></li>
 
 
@@ -64,9 +64,21 @@
                     </li>
 
                     <li class="pc-item">
-                        <a href="{{ route('courses.index') }}" class="pc-link">
+                        <a href="{{ route('courses.upload') }}" class="pc-link">
                             <span class="pc-micon"><i class="fas fa-book"></i></span>
                             <span class="pc-mtext">Course Upload</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ route('evaluation.teacher') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-mtext">Course Evaluated</span>
+                        </a>
+                    </li>
+                    <li class="pc-item">
+                        <a href="{{ route('evaluation.student') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-mtext">Teaching Evaluation</span>
                         </a>
                     </li>
                 </ul>

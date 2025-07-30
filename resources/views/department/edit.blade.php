@@ -9,12 +9,12 @@
                 <div class="modal-body">
                     <input type="hidden" id="edit_department_id" name="id">
                     <div class="mb-3">
-                        <label for="edit_department_input" class="form-label">department</label>
-                        <input type="text" class="form-control" id="edit_department_input_name" name="edit_department_name" value="" required>
+                        <label for="edit_department_input" class="form-label">Department Name</label>
+                        <input type="text" class="form-control" id="edit_department_input_name" name="name" value="" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_department_input" class="form-label">department</label>
-                        <input type="text" class="form-control" id="edit_department_input_code" name="edit_department_code" value="" required>
+                        <label for="edit_department_input" class="form-label">Department Code</label>
+                        <input type="text" class="form-control" id="edit_department_input_code" name="code" value="" required>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -34,8 +34,8 @@
         </div>
 
     </div>
-    {{-- @include('batch.create')
-    @include('batch.edit') --}}
+    @include('batch.create')
+    @include('batch.edit')
 
     <script>
         $(document).ready(function() {
@@ -77,17 +77,18 @@
                 success: function(res) {
                     showSuccessModal(res.message);
                     $('#batch_table').DataTable().ajax.reload();
-                }
-            });
-
-            $('#edit_batch_form').ajaxForm({
-                beforeSubmit: function() {
-                    $('#edit_batch_form')[0].reset();
-                    $('#edit_batch').modal('hide');
                 },
-                success: function(res) {
-                    showSuccessModal(res.message);
-                    $('#batch_table').DataTable().ajax.reload();
+                error: function(xhr) {
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
                 }
             });
 
@@ -97,12 +98,13 @@
 
                 $.ajax({
                     type: 'GET',
-                    url: '/batchs/' + batchId,
+                    url: '/batches/' + batchId,
                     success: function(response) {
-                        $('#edit_batch_input').val(response.data.batch);
+                        console.log(response);
+
+                        $('#edit_batch_input_name').val(response.name);
+                        $('#edit_batch_input_year').val(response.year);
                         $('#edit_batch_id').val(batchId);
-                        $('#edit_batch_modal').modal('show');
-                        console.log("Set value:", response.data.batch);
                     }
                 });
             });
@@ -112,13 +114,16 @@
                 e.preventDefault();
 
                 var batchId = $('#edit_batch_id').val();
-                var batchVal = $('input[name="edit_batch"]').val();
+                var batchName = $('#edit_batch_input_name').val();
+                var batchYear = $('#edit_batch_input_year').val();
 
                 $.ajax({
-                    url: '/batchs/' + batchId,
-                    type: 'PUT',
+                    url: '/batches_update',
+                    type: 'POST',
                     data: {
-                        batch: batchVal,
+                        id: batchId,
+                        name: batchName,
+                        year: batchYear,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(res) {
@@ -127,7 +132,16 @@
                         $('#batch_table').DataTable().ajax.reload();
                     },
                     error: function(xhr) {
-                        alert('Update failed');
+                        var errors = xhr.responseJSON?.errors;
+                        var errorMessage = '';
+                        if (errors) {
+                            $.each(errors, function(key, value) {
+                                errorMessage += value[0] + '\n';
+                            });
+                        } else {
+                            errorMessage = 'An error occurred. Please try again.';
+                        }
+                        showErrorModal(errorMessage);
                     }
                 });
             });
@@ -136,8 +150,8 @@
                 var batchId = $(this).data("id");
                 showConfirmDeleteModal("Are you sure you want to delete this batch?", function() {
                     $.ajax({
-                        url: '/batchs/' + batchId,
-                        type: 'DELETE',
+                        url: '/batches_delete/' + batchId,
+                        type: 'GET',
                         data: {
                             _token: '{{ csrf_token() }}'
                         },
@@ -146,7 +160,16 @@
                             $('#batch_table').DataTable().ajax.reload();
                         },
                         error: function(xhr) {
-                            alert('Delete failed');
+                            var errors = xhr.responseJSON?.errors;
+                            var errorMessage = '';
+                            if (errors) {
+                                $.each(errors, function(key, value) {
+                                    errorMessage += value[0] + '\n';
+                                });
+                            } else {
+                                errorMessage = 'An error occurred. Please try again.';
+                            }
+                            showErrorModal(errorMessage);
                         }
                     });
                 });

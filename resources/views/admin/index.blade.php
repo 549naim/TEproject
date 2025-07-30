@@ -4,7 +4,7 @@
     <div class="pc-content">
         <div class="row">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0">Admin List</h1>
+                <h1 class="mb-0">User List</h1>
 
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_admin">
                     <i class="fas fa-plus-circle"></i> Create
@@ -22,6 +22,7 @@
                                 <th>No</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Department</th>
                                 <th>Roles</th>
                                 <th width="100px">Action</th>
                             </tr>
@@ -57,6 +58,10 @@
                         {
                             data: 'email',
                             name: 'email'
+                        },
+                        {
+                            data: 'department',
+                            name: 'department'
                         },
                         {
                             data: 'roles',
