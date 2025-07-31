@@ -6,9 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class QuestionController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:question_management', ['only' => ['index', 'store', 'show', 'update', 'destroy']]);
+    }
+
     public function index()
     {
         if (request()->ajax()) {

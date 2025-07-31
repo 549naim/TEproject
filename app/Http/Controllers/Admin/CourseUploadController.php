@@ -15,9 +15,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class CourseUploadController extends Controller
 {
+
+       function __construct()
+    {
+        $this->middleware('permission:course_upload', ['only' => ['index', 'importCourseData']]);
+    }
+
+
     public function index(Request $request)
     {
         $departments = Department::all();

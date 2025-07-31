@@ -19,8 +19,18 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
+
 class AdminController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware('permission:admin_create', ['only' => ['index','store', 'admin_edit', 'admin_update', 'admin_delete']]);
+        $this->middleware('permission:student_evaluation', ['only' => ['evaluation_student', 'evaluation_student_course', 'evaluation_student_store']]);
+        $this->middleware('permission:teacher_evaluation', ['only' => ['evaluation_teacher', 'evaluation_teacher_course', 'evaluation_data']]);
+       
+    }
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -223,5 +233,125 @@ class AdminController extends Controller
         }
 
         return response()->json(['message' => 'Evaluation submitted successfully']);
+    }
+
+    public function evaluation_teacher()
+    {
+        $user = Auth::user();
+        $batches = Batch::all();
+        $questions = Question::all();
+        return view('evaluation.teacher', compact('user', 'batches', 'questions'));
+    }
+
+    public function evaluation_teacher_course(Request $request)
+    {
+        $request->validate([
+            'year' => 'required',
+            'batch_id' => 'required',
+        ]);
+
+        $user = Auth::user();
+
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $user_id = $user->id;
+        $dept_id = $user->dept_id;
+
+        $courseIds = TeacherWiseCourse::where('year', $year)
+            ->where('batch_id', $batch_id)
+            ->where('teacher_id', $user_id)
+            ->where('department_id', $dept_id)
+            ->pluck('course_id');
+
+        $courses = Course::whereIn('id', $courseIds)
+            ->get(['id', 'name', 'code'])
+            ->map(function ($course) use ($year, $batch_id, $dept_id, $user_id) {
+                $teacher = TeacherWiseCourse::where('course_id', $course->id)
+                    ->where('year', $year)
+                    ->where('batch_id', $batch_id)
+                    ->where('department_id', $dept_id)
+                    ->first();
+
+                $teacher_id = $teacher ? $teacher->teacher_id : null;
+
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'code' => $course->code,
+                    'department_id' => $dept_id,
+                    'teacher_id' => $user_id,
+                    'year' => $year,
+                    'batch_id' => $batch_id
+                ];
+            });
+
+        return response()->json($courses);
+    }
+
+    public function evaluation_data(Request $request)
+    {
+        $course_id = $request->course_id;
+        $department_id = $request->department_id;
+        $teacher_id = $request->teacher_id;
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $question_ids = $request->question_ids;
+
+        // 1. Average Ratings per Question
+        $ratings = [];
+        $totalAverageSum = 0;
+
+        foreach ($question_ids as $question_id) {
+            $averageRating = CourseEvaluationData::where([
+                'course_id' => $course_id,
+                'department_id' => $department_id,
+                'teacher_id' => $teacher_id,
+                'year' => $year,
+                'batch_id' => $batch_id,
+                'question_id' => $question_id,
+            ])->avg('ratting');
+
+            $roundedAvg = round($averageRating);
+            $ratings[] = [
+                'question_id' => $question_id,
+                'average_rating' => $roundedAvg,
+            ];
+
+            $totalAverageSum += $roundedAvg;
+        }
+
+        // 2. Get all comments for this course
+        $comments = CourseEvaluationComment::where([
+            'course_id' => $course_id,
+            'department_id' => $department_id,
+            'teacher_id' => $teacher_id,
+            'year' => $year,
+            'batch_id' => $batch_id,
+        ])->pluck('comment_data');
+
+        // 3. Get number of unique students who gave ratings
+        $uniqueStudentCount = CourseEvaluationData::where([
+            'course_id' => $course_id,
+            'department_id' => $department_id,
+            'teacher_id' => $teacher_id,
+            'year' => $year,
+            'batch_id' => $batch_id,
+        ])->distinct('student_id')->count('student_id');
+
+        $totalEnrolledStudents = StudentWiseCourse::where([
+            'course_id' => $course_id,
+            'department_id' => $department_id,
+            'year' => $year,
+            'batch_id' => $batch_id,
+        ])->distinct('student_id')->count('student_id');
+
+        return response()->json([
+            'status' => 'success',
+            'ratings' => $ratings,
+            'total_average_sum' => $totalAverageSum,
+            'comments' => $comments,
+            'total_students' => $uniqueStudentCount,
+            'total_enrolled_students' => $totalEnrolledStudents,
+        ]);
     }
 }

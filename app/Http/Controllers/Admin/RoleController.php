@@ -27,7 +27,7 @@ class RoleController extends Controller
         $this->middleware('permission:role_create', ['only' => ['createRole', 'createPermission', 'role_permission']]);
         $this->middleware('permission:role_edit', ['only' => ['edit,update']]);
         $this->middleware('permission:role_delete', ['only' => ['role_delete', 'permission_delete']]);
-        $this->middleware('permission:role_pemission_edit', ['only' => ['role_edit', 'permission_edit', 'role_update', 'permission_update']]);
+        // $this->middleware('permission:role_pemission_edit', ['only' => ['role_edit', 'permission_edit', 'role_update', 'permission_update']]);
     }
 
     public function createRole(Request $request)

@@ -42,8 +42,11 @@ Route::group([
     Route::get('/admin_edit/{id}', ['uses' => 'AdminController@admin_edit'])->name('admin_edit');
     Route::post('/admin_update', ['uses' => 'AdminController@admin_update'])->name('admin_update');
     Route::get('/admin_delete/{id}', ['uses' => 'AdminController@admin_delete'])->name('admin_delete');
+
     Route::get('/evaluation/teacher', ['uses' => 'AdminController@evaluation_teacher'])->name('evaluation.teacher');
-    Route::post('/evaluation/teacher', ['uses' => 'AdminController@evaluation_teacher_store'])->name('evaluation.teacher.store');
+    Route::post('/evaluation/data', ['uses' => 'AdminController@evaluation_data'])->name('evaluation.data');
+    Route::post('/evaluation/teacher/course', ['uses' => 'AdminController@evaluation_teacher_course'])->name('evaluation.teacher.course');
+
 
 
     Route::get('/evaluation/student', ['uses' => 'AdminController@evaluation_student'])->name('evaluation.student');

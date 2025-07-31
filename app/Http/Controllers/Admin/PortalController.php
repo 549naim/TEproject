@@ -3,14 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Department;
-use Yajra\DataTables\DataTables;
 use App\Models\Batch;
 use App\Models\Course;
+use App\Models\Department;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use Spatie\Permission\Models\Permission;
 
 class PortalController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:department_management', ['only' => ['departmentIndex', 'departmentStore', 'departmentShow', 'departmentUpdate', 'departmentDelete']]);
+        $this->middleware('permission:batch_management', ['only' => ['batchIndex', 'batchStore', 'batchShow', 'batchUpdate', 'batchDelete']]);
+        $this->middleware('permission:course_management', ['only' => ['courseIndex', 'courseStore', 'courseShow', 'courseUpdate', 'courseDelete']]);
+    }
+
     public function departmentIndex()
     {
         if (request()->ajax()) {
@@ -119,7 +127,6 @@ class PortalController extends Controller
         return redirect()->route('departments.index')->with('success', 'Department deleted successfully.');
     }
 
-
     public function batchStore(Request $request)
     {
         $request->validate([
@@ -133,8 +140,6 @@ class PortalController extends Controller
         Batch::create($data);
         return redirect()->route('batches.index')->with('success', 'Batch created successfully.');
     }
-
-
 
     public function batchShow($id)
     {
@@ -205,6 +210,4 @@ class PortalController extends Controller
         $course->delete();
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
     }
-    
-
 }
