@@ -13,8 +13,8 @@
             @if (isset($evaluationSetting->start_date) && isset($evaluationSetting->end_date))
                 <div class="alert alert-success d-flex justify-content-between align-items-center p-3 rounded mb-3">
                     <h4 class="mb-0">
-                        Teaching Evaluation Date From {{ $evaluationSetting->start_date }} To
-                        {{ $evaluationSetting->end_date }}
+                        Teaching Evaluation Date From <span id="evaluation_start">{{ $evaluationSetting->start_date }}</span> To
+                        <span id="evaluation_end">{{ $evaluationSetting->end_date }}</span>
                     </h4>
                 </div>
             @endif
@@ -56,6 +56,10 @@
                 },
                 success: function(res) {
                     showSuccessModal(res.message);
+                    if (res.data) {
+                        $('#evaluation_start').text(res.data.start_date);
+                        $('#evaluation_end').text(res.data.end_date);
+                    }
                 },
                 error: function(xhr) {
                     var errors = xhr.responseJSON?.errors;

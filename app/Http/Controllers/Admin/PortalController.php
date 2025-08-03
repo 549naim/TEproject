@@ -236,9 +236,10 @@ class PortalController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
         ]);
-
+        $evaluationDate = EvaluationSetting::latest()->first();
         return response()->json([
             'message' => 'Evaluation settings saved successfully.',
+            'data' => $evaluationDate
         ]);
     }
 
