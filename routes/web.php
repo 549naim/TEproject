@@ -47,8 +47,6 @@ Route::group([
     Route::post('/evaluation/data', ['uses' => 'AdminController@evaluation_data'])->name('evaluation.data');
     Route::post('/evaluation/teacher/course', ['uses' => 'AdminController@evaluation_teacher_course'])->name('evaluation.teacher.course');
 
-
-
     Route::get('/evaluation/student', ['uses' => 'AdminController@evaluation_student'])->name('evaluation.student');
     Route::post('/evaluation/student/course', ['uses' => 'AdminController@evaluation_student_course'])->name('evaluation.student.course');
     Route::post('/evaluation/student', ['uses' => 'AdminController@evaluation_student_store'])->name('evaluation.student.store');
@@ -69,7 +67,6 @@ Route::group([
     Route::get('/departments/{id}', ['uses' => 'CourseUploadController@departmentShow'])->name('departments.show');
     Route::post('/departments_update', ['uses' => 'CourseUploadController@departmentUpdate'])->name('departments.update');
     Route::get('/departments_delete/{id}', ['uses' => 'CourseUploadController@departmentDelete'])->name('departments.delete');
-    
 });
 
 Route::group([
@@ -93,6 +90,9 @@ Route::group([
     Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
     Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
 
-    
+    Route::get('/evaluation/settings', ['uses' => 'PortalController@evaluation_settings'])->name('evaluation.settings');
+    Route::post('/evaluation/settings/store', ['uses' => 'PortalController@evaluation_settings_store'])->name('evaluation.settings.store');
+
+    Route::get('/send-email', ['uses' => 'PortalController@sendEmail'])->name('send.email');
 
 });

@@ -18,6 +18,15 @@
                         <label for="admin_email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="admin_email" name="email" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="admin_dept_id" class="form-label">Department</label>
+                        <select class="form-control" id="admin_dept_id" name="dept_id" required>
+                            <option value="" disabled selected>Select Department</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}[{{ $department->code }}]</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="mb-3">
                         <label for="admin_roles" class="form-label">Role</label>

@@ -1,14 +1,14 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="../dashboard/index.html" class="b-brand text-primary">
-                <img src="../assets/images/logo-dark.svg" class="img-fluid logo-lg" alt="logo">
+            <a href="{{ url('/') }}" class="b-brand text-primary">
+                <img src="{{ asset('assets/images/logo.png') }}" class="img-fluid logo-lg" alt="logo" style="height:32px; width:auto; max-width:80px;">
             </a>
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
                 <li class="pc-item">
-                    <a href="../dashboard/index.html" class="pc-link">
+                    <a href="{{ url('/') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
                         <span class="pc-mtext">Dashboard</span>
                     </a>
@@ -56,8 +56,8 @@
                             </li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('batches.index') }}">Batch</a></li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('courses.index') }}">Course</a></li>
-                           
-                            {{-- <li class="pc-item"><a class="pc-link" href="{{ route('roles.index') }}">Role & Permission</a></li> --}}
+
+                            <li class="pc-item"><a class="pc-link" href="{{ route('evaluation.settings') }}">Evaluation Settings</a></li>
 
 
                         </ul>

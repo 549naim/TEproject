@@ -22,22 +22,18 @@
                             @foreach ($questions as $question)
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold">{{ $question->question }}</label>
-                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <div class="star-rating" data-question-id="{{ $question->id }}">
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <div class="form-check me-3">
-                                                <input class="form-check-input" type="radio"
-                                                    name="ratings[{{ $question->id }}]"
-                                                    id="rating_{{ $question->id }}_{{ $i }}"
-                                                    value="{{ $i }}" required>
-                                                <label class="form-check-label"
-                                                    for="rating_{{ $question->id }}_{{ $i }}">
-                                                    {{ $i }}
-                                                </label>
-                                            </div>
+                                            <i class="fa fa-star star" data-value="{{ $i }}"
+                                                id="star_{{ $question->id }}_{{ $i }}"
+                                                style="cursor: pointer; font-size: 24px; color: gray;"></i>
                                         @endfor
+                                        <input type="hidden" name="ratings[{{ $question->id }}]"
+                                            id="rating_input_{{ $question->id }}" required>
                                     </div>
                                 </div>
                             @endforeach
+
                         </div>
                         <div class="mb-4">
                             <label for="comment_data" class="form-label fw-semibold">Comment</label>

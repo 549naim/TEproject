@@ -12,9 +12,20 @@
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <select class="form-control" id="dept_id" name="dept_id" required>
+                            <option value="" disabled selected>Select Department</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }}[{{ $department->code }}]
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
@@ -22,7 +33,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="confirm-password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
+                        <input type="password" class="form-control" id="confirm-password" name="confirm-password"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="role" class="form-label">Role</label>

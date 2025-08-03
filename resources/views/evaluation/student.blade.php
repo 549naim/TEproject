@@ -18,56 +18,64 @@
                 <h3 class="mb-0">Teaching Evaluation</h3>
             </div>
         </div>
+        @if (!$evaluationOpen)
+            <div class="alert alert-warning text-center text-lg font-semibold my-8">
+                <h4 class="mb-0">Teaching Evaluation is currently closed.</h4>
+                <p>Please check back later.</p>
+            </div>
+        @else
+            <div class="card p-4">
 
-        <div class="card p-4">
-           
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="year" class="form-label">Select Year</label>
-                    <select id="year" name="year" class="form-select" required>
-                        <option value="" disabled selected>-- Select Year --</option>
-                        @php $currentYear = date('Y'); @endphp
-                        @for ($y = 2000; $y <= 2050; $y++)
-                            <option value="{{ $y }}" {{ $y == $currentYear ? 'selected' : '' }}>
-                                {{ $y }}</option>
-                        @endfor
-                    </select>
-                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="year" class="form-label">Select Year</label>
+                        <select id="year" name="year" class="form-select" required>
+                            <option value="" disabled selected>-- Select Year --</option>
+                            @php $currentYear = date('Y'); @endphp
+                            @for ($y = 2000; $y <= 2050; $y++)
+                                <option value="{{ $y }}" {{ $y == $currentYear ? 'selected' : '' }}>
+                                    {{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
 
-                <div class="col-md-6">
-                    <label for="batch_id" class="form-label">Select Batch</label>
-                    <select id="batch_id" name="batch_id" class="form-select" required>
-                        <option value="" disabled selected>-- Select Batch --</option>
-                        @foreach ($batches as $batch)
-                            <option value="{{ $batch->id }}">{{ $batch->name }} [{{ $batch->year }}]</option>
-                        @endforeach
-                    </select>
+                    <div class="col-md-6">
+                        <label for="batch_id" class="form-label">Select Batch</label>
+                        <select id="batch_id" name="batch_id" class="form-select" required>
+                            <option value="" disabled selected>-- Select Batch --</option>
+                            @foreach ($batches as $batch)
+                                <option value="{{ $batch->id }}">{{ $batch->name }} [{{ $batch->year }}]</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Table to Show Courses --}}
-        <div class="card p-4 mt-4 d-none" id="courseTableCard">
-            <h5 class="mb-3">Available Courses</h5>
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center">
-                    <thead class="table-light text-start">
-                        <tr>
-                           
-                            <th>Course Name</th>
-                            <th>Course Code</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-start" id="courseTableBody">
-                        <!-- Courses will be injected here -->
-                    </tbody>
-                </table>
+            {{-- Table to Show Courses --}}
+            <div class="card p-4 mt-4 d-none" id="courseTableCard">
+                <h5 class="mb-3">Available Courses</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle text-center">
+                        <thead class="table-light text-start">
+                            <tr>
+
+                                <th>Course Name</th>
+                                <th>Course Code</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-start" id="courseTableBody">
+                            <!-- Courses will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
     </div>
     @include('evaluation.evaluation_form')
+    @endif
+
+
 
     {{-- CSRF Token for AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -116,17 +124,17 @@
                                             course.evaluated
                                             ? `<button class="btn btn-sm btn-success" disabled>Evaluated</button>`
                                             : `<button 
-                                                            class="btn btn-sm btn-primary btn-evaluate"
-                                                            data-course-id="${course.id}"
-                                                            data-course-name="${course.name}"
-                                                            data-department-id="${course.department_id}"
-                                                            data-teacher-id="${course.teacher_id}"
-                                                            data-student-id="${course.student_id}"
-                                                            data-year="${course.year}"
-                                                            data-batch-id="${course.batch_id}"
-                                                        >
-                                                            Evaluate
-                                                        </button>`
+                                                                    class="btn btn-sm btn-primary btn-evaluate"
+                                                                    data-course-id="${course.id}"
+                                                                    data-course-name="${course.name}"
+                                                                    data-department-id="${course.department_id}"
+                                                                    data-teacher-id="${course.teacher_id}"
+                                                                    data-student-id="${course.student_id}"
+                                                                    data-year="${course.year}"
+                                                                    data-batch-id="${course.batch_id}"
+                                                                >
+                                                                    Evaluate
+                                                                </button>`
                                         }
                                     </td>
                                 </tr>
@@ -134,7 +142,7 @@
                             `);
 
                         });
-                        
+
                     },
                     error: function(xhr) {
                         courseTableBody.html(
@@ -167,6 +175,7 @@
                 success: function(res) {
                     showSuccessModal(res.message);
                     fetchCourses();
+                    $('.star-rating .star').css('color', 'gray');
                 },
                 error: function(xhr) {
                     var errors = xhr.responseJSON?.errors;
@@ -185,5 +194,22 @@
 
         });
     </script>
+    <script>
+    $(document).ready(function () {
+        $('.star-rating .star').on('click', function () {
+            const value = $(this).data('value');
+            const parent = $(this).closest('.star-rating');
+            const questionId = parent.data('question-id');
+
+            parent.find('.star').css('color', 'gray');
+
+            for (let i = 1; i <= value; i++) {
+                parent.find(`#star_${questionId}_${i}`).css('color', 'gold');
+            }
+
+            $(`#rating_input_${questionId}`).val(value);
+        });
+    });
+</script>
 
 @endsection

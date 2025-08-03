@@ -12,6 +12,8 @@ use App\Models\Question;
 use App\Models\StudentWiseCourse;
 use App\Models\TeacherWiseCourse;
 use App\Models\User;
+use App\Models\EvaluationSetting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,16 +21,13 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
-
 class AdminController extends Controller
 {
-
     function __construct()
     {
-        $this->middleware('permission:admin_create', ['only' => ['index','store', 'admin_edit', 'admin_update', 'admin_delete']]);
+        $this->middleware('permission:admin_create', ['only' => ['index', 'store', 'admin_edit', 'admin_update', 'admin_delete']]);
         $this->middleware('permission:student_evaluation', ['only' => ['evaluation_student', 'evaluation_student_course', 'evaluation_student_store']]);
         $this->middleware('permission:teacher_evaluation', ['only' => ['evaluation_teacher', 'evaluation_teacher_course', 'evaluation_data']]);
-       
     }
 
     public function index(Request $request)
@@ -64,7 +63,8 @@ class AdminController extends Controller
         }
 
         $roles = Role::pluck('name', 'name')->all();
-        return view('admin.index', compact('roles'));
+        $departments = Department::all();
+        return view('admin.index', compact('roles', 'departments'));
     }
 
     public function store(Request $request)
@@ -72,6 +72,7 @@ class AdminController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
+            'dept_id' => 'required',
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
         ]);
@@ -104,12 +105,13 @@ class AdminController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $request->id,
+            'dept_id' => 'required',
             'roles' => 'required'
         ]);
 
         $admin = User::findOrFail($request->id);
 
-        $admin->update($request->only(['name', 'email']));
+        $admin->update($request->only(['name', 'email', 'dept_id']));
         $admin->syncRoles($request->input('roles'));
 
         return response()->json([
@@ -134,7 +136,19 @@ class AdminController extends Controller
         $user = Auth::user();
         $batches = Batch::all();
         $questions = Question::all();
-        return view('evaluation.student', compact('batches', 'user', 'questions'));
+
+      
+        $setting = EvaluationSetting::latest()->first();
+
+        $now = Carbon::now();
+
+        $evaluationOpen = false;
+
+        if ($setting && $now->between($setting->start_date, $setting->end_date)) {
+            $evaluationOpen = true;
+        }
+
+        return view('evaluation.student', compact('batches', 'user', 'questions', 'evaluationOpen'));
     }
 
     public function evaluation_student_course(Request $request)
@@ -195,7 +209,7 @@ class AdminController extends Controller
     }
 
     public function evaluation_student_store(Request $request)
-    {
+    {   
         $studentId = Auth::id();  // Currently logged in student
 
         // Prepare common conditions to check duplication

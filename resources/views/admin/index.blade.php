@@ -100,11 +100,13 @@
                         $('#admin_name').val(res.data.name);
                         $('#admin_email').val(res.data.email);
 
-                        // Populate roles
-                        let allRoles = @json($roles); // available from blade
-                        let userRoles = res.roles; // ✅ comes from controller now
-                        let roleOptions = '';
+                        $('#admin_dept_id').val(res.data.dept_id);
 
+                        // ✅ Populate roles
+                        let allRoles = @json($roles); // blade থেকে আসছে
+                        let userRoles = res.roles; // controller থেকে ইউজারের রোল
+
+                        let roleOptions = '';
                         $.each(allRoles, function(key, value) {
                             const selected = userRoles.includes(key) ? 'selected' : '';
                             roleOptions +=
@@ -112,13 +114,16 @@
                         });
 
                         $('#admin_roles').html(roleOptions);
+
+
                         $('#edit_admin_modal').modal('show');
                     },
                     error: function() {
-                        // alert("Failed to load admin data!");
+                        alert("Failed to load admin data!");
                     }
                 });
             });
+
 
 
             // Update Admin
@@ -129,6 +134,7 @@
                     id: $('#admin_id').val(),
                     name: $('#admin_name').val(),
                     email: $('#admin_email').val(),
+                    dept_id: $('#admin_dept_id').val(), // ✅ Department ID added
                     roles: $('#admin_roles').val(),
                     _token: $('meta[name="csrf-token"]').attr('content')
                 };
@@ -140,15 +146,28 @@
                     success: function(res) {
                         if (res.success) {
                             $('#edit_admin_modal').modal('hide');
-                            showSuccessModal(res.message);
+                            showSuccessModal(res.message); // ✅ You already use this
                             $('#admin_table').DataTable().ajax.reload();
+                        } else {
+                            showErrorModal(res.message || 'Update failed.');
                         }
                     },
                     error: function(xhr) {
-
+                        let errors = xhr.responseJSON?.errors;
+                        if (errors) {
+                            let errorList = '<ul>';
+                            $.each(errors, function(key, value) {
+                                errorList += `<li>${value[0]}</li>`;
+                            });
+                            errorList += '</ul>';
+                            showErrorModal(errorList);
+                        } else {
+                            showErrorModal('Something went wrong. Please try again.');
+                        }
                     }
                 });
             });
+
             $('body').on('click', '#delete_admin', function() {
                 const adminId = $(this).data('id');
                 showConfirmDeleteModal("Are you sure you want to delete this admin?", function() {
