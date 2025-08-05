@@ -35,11 +35,11 @@
                             @endforeach
 
                         </div>
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                             <label for="comment_data" class="form-label fw-semibold">Comment</label>
                             <textarea class="form-control" id="comment_data" name="comment_data" rows="4"
                                 placeholder="Write your comment here..."></textarea>
-                        </div>
+                        </div> --}}
 
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">Submit Evaluation</button>

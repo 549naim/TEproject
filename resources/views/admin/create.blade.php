@@ -19,7 +19,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="department" class="form-label">Department</label>
-                        <select class="form-control" id="dept_id" name="dept_id" required>
+                        <select class="form-control" id="dept_id" name="dept_id">
                             <option value="" disabled selected>Select Department</option>
                             @foreach ($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->name }}[{{ $department->code }}]
@@ -27,10 +27,16 @@
                             @endforeach
                         </select>
                     </div>
+                     <div class="mb-3">
+                        <label for="roll_no" class="form-label">Roll No</label>
+                        <input type="text" class="form-control" id="roll_no" name="roll_no">
+                    </div>
+
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
+                   
                     <div class="mb-3">
                         <label for="confirm-password" class="form-label">Confirm Password</label>
                         <input type="password" class="form-control" id="confirm-password" name="confirm-password"

@@ -42,8 +42,8 @@
                         <label for="year" class="form-label">Select Year</label>
                         <select id="year" name="year" class="form-select" required>
                             <option value="" selected disabled>-- Select Year --</option>
-                            @for ($y = 2000; $y <= 2050; $y++)
-                                <option value="{{ $y }}">{{ $y }}</option>
+                            @for ($year = 2025; $year <= 2050; $year++)
+                                <option value="{{ $year }}">{{ $year }}</option>
                             @endfor
                         </select>
                     </div>

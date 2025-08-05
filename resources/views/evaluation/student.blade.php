@@ -33,7 +33,7 @@
                         <select id="year" name="year" class="form-select" required>
                             <option value="" disabled selected>-- Select Year --</option>
                             @php $currentYear = date('Y'); @endphp
-                            @for ($y = 2000; $y <= 2050; $y++)
+                            @for ($y = 2025; $y <= 2050; $y++)
                                 <option value="{{ $y }}" {{ $y == $currentYear ? 'selected' : '' }}>
                                     {{ $y }}</option>
                             @endfor

@@ -48,6 +48,12 @@ class AdminController extends Controller
                     }
                     return '<span class="badge bg-secondary">N/A</span>';
                 })
+                ->addColumn('roll_no', function ($row) {
+                    if (empty($row->roll_no)) {
+                        return '<span class="badge bg-secondary">N/A</span>';
+                    }
+                    return '<span class="badge bg-info">' . e($row->roll_no) . '</span>';
+                })
                 ->addColumn('action', function ($row) {
                     $btn = '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#edit_admin_modal" id="edit_admin" data-id="' . $row->id . '">
                             <i class="fas fa-pen"></i>
@@ -58,7 +64,7 @@ class AdminController extends Controller
                         </button>';
                     return $btn;
                 })
-                ->rawColumns(['action', 'roles', 'department'])
+                ->rawColumns(['action', 'roles', 'department', 'roll_no'])
                 ->make(true);
         }
 
@@ -72,7 +78,6 @@ class AdminController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'dept_id' => 'required',
             'password' => 'required|same:confirm-password',
             'roles' => 'required'
         ]);
@@ -105,13 +110,12 @@ class AdminController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $request->id,
-            'dept_id' => 'required',
             'roles' => 'required'
         ]);
 
         $admin = User::findOrFail($request->id);
 
-        $admin->update($request->only(['name', 'email', 'dept_id']));
+        $admin->update($request->only(['name', 'email', 'dept_id', 'roll_no']));
         $admin->syncRoles($request->input('roles'));
 
         return response()->json([

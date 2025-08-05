@@ -15,7 +15,7 @@
                     <div class="mb-3">
                         <label for="batch_year" class="form-label">Batch Year</label>
                         <select class="form-control" id="batch_year" name="year" required>
-                            @for ($year = date('Y'); $year >= 2000; $year--)
+                            @for ($year = 2025; $year <= 2050; $year++)
                                 <option value="{{ $year }}">{{ $year }}</option>
                             @endfor
                         </select>

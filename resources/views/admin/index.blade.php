@@ -23,6 +23,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Department</th>
+                                <th>Roll No</th>
                                 <th>Roles</th>
                                 <th width="100px">Action</th>
                             </tr>
@@ -64,6 +65,10 @@
                             name: 'department'
                         },
                         {
+                            data: 'roll_no',
+                            name: 'roll_no'
+                        },
+                        {
                             data: 'roles',
                             name: 'roles'
                         },
@@ -86,6 +91,18 @@
                 success: function(res) {
                     showSuccessModal(res.message);
                     $('#admin_table').DataTable().ajax.reload();
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
                 }
             });
             // Show Edit Modal
@@ -99,8 +116,8 @@
                         $('#admin_id').val(res.data.id);
                         $('#admin_name').val(res.data.name);
                         $('#admin_email').val(res.data.email);
-
                         $('#admin_dept_id').val(res.data.dept_id);
+                        $('#admin_roll_no').val(res.data.roll_no);
 
                         // ✅ Populate roles
                         let allRoles = @json($roles); // blade থেকে আসছে
@@ -134,7 +151,9 @@
                     id: $('#admin_id').val(),
                     name: $('#admin_name').val(),
                     email: $('#admin_email').val(),
-                    dept_id: $('#admin_dept_id').val(), // ✅ Department ID added
+                    dept_id: $('#admin_dept_id').val(),
+                    // ✅ Department ID added
+                    roll_no: $('#admin_roll_no').val(),
                     roles: $('#admin_roles').val(),
                     _token: $('meta[name="csrf-token"]').attr('content')
                 };

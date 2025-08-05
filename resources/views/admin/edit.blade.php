@@ -20,12 +20,16 @@
                     </div>
                     <div class="mb-3">
                         <label for="admin_dept_id" class="form-label">Department</label>
-                        <select class="form-control" id="admin_dept_id" name="dept_id" required>
+                        <select class="form-control" id="admin_dept_id" name="dept_id">
                             <option value="" disabled selected>Select Department</option>
                             @foreach ($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->name }}[{{ $department->code }}]</option>
                             @endforeach
                         </select>
+                    </div>
+                     <div class="mb-3">
+                        <label for="admin_roll_no" class="form-label">Roll No</label>
+                        <input type="text" class="form-control" id="admin_roll_no" name="roll_no">
                     </div>
 
                     <div class="mb-3">

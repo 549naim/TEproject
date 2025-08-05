@@ -14,17 +14,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
-use Yajra\DataTables\Facades\DataTables;
 use Spatie\Permission\Models\Permission;
+use Yajra\DataTables\Facades\DataTables;
 
 class CourseUploadController extends Controller
 {
-
-       function __construct()
+    function __construct()
     {
         $this->middleware('permission:course_upload', ['only' => ['index', 'importCourseData']]);
     }
-
 
     public function index(Request $request)
     {
@@ -35,7 +33,6 @@ class CourseUploadController extends Controller
 
     public function importCourseData(Request $request)
     {
-        
         $request->validate([
             'year' => 'required|integer',
             'department_id' => 'required|exists:departments,id',
@@ -48,83 +45,49 @@ class CourseUploadController extends Controller
             if ($request->hasFile('course_excel')) {
                 $rows = Excel::toArray([], $request->file('course_excel'));
 
-                DB::beginTransaction();
+                $sheet = $rows[0];
 
-                $headerRow = $rows[0][0] ?? [];
-                $firstDataRow = null;
-                foreach ($rows[0] as $index => $row) {
+                $courseRows = [];
+                $studentRows = [];
+
+                
+                foreach ($sheet as $index => $row) {
                     if ($index == 0)
-                        continue;
-                    if (!empty($row[0]) && !empty($row[1]) && !empty($row[2]) && !empty($row[3])) {
-                        $firstDataRow = $row;
-                        break;
+                        continue;  // header skip
+
+                    $hasCourseData = !empty($row[0]) || !empty($row[1]) || !empty($row[2]) || !empty($row[3]);
+                    $hasStudentData = !empty($row[4]) || !empty($row[5]) || !empty($row[6]);
+
+                   
+                    if ($hasCourseData) {
+                        $courseRows[] = $row;
+                    }
+
+                  
+                    if ($hasStudentData) {
+                        $studentRows[] = $row;
                     }
                 }
 
-                if (!$firstDataRow) {
-                    throw new \Exception('Course and teacher information not found.');
+                if (empty($courseRows)) {
+                    throw new \Exception('No course and teacher data found in file.');
                 }
 
-                $course_name = $firstDataRow[0];
-                $course_code = $firstDataRow[1];
-                $teacher_name = $firstDataRow[2];
-                $teacher_email = $firstDataRow[3];
-
-                $teacher = User::firstOrCreate(
-                    ['email' => trim($teacher_email)],
-                    [
-                        'name' => $teacher_name,
-                        'password' => Hash::make(str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_LEFT)),
-                        'dept_id' => $request->department_id,
-                    ]
-                );
-                if (!$teacher->hasRole('Teacher')) {
-                    $teacher->assignRole('Teacher');
-                }
-
-                $course = Course::where('code', $course_code)->first();
-                if (!$course) {
-                    $course = Course::create([
-                        'name' => $course_name,
-                        'code' => $course_code,
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id()
-                    ]);
-                }
-
-                $exists = TeacherWiseCourse::where([
-                    'teacher_id' => $teacher->id,
-                    'course_id' => $course->id,
-                    'department_id' => $request->department_id,
-                    'batch_id' => $request->batch_id,
-                    'year' => $request->year,
-                ])->exists();
-
-                if (!$exists) {
-                    TeacherWiseCourse::create([
-                        'teacher_id' => $teacher->id,
-                        'course_id' => $course->id,
-                        'department_id' => $request->department_id,
-                        'batch_id' => $request->batch_id,
-                        'year' => $request->year,
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id(),
-                    ]);
-                }
-
-                foreach ($rows[0] as $index => $row) {
-                    if ($index == 0)
-                        continue;
-                    $student_name = $row[4] ?? null;
+               
+                $studentList = [];
+                foreach ($studentRows as $row) {
+                    $student_name = trim($row[4] ?? '');
                     $student_email = trim($row[5] ?? '');
+                    $student_roll = trim($row[6] ?? '');
 
-                    if (!$student_name || !$student_email)
+                    if (!$student_name || !$student_email || !$student_roll)
                         continue;
 
                     $student = User::firstOrCreate(
                         ['email' => $student_email],
                         [
                             'name' => $student_name,
+                            'roll_no' => $student_roll,
                             'password' => Hash::make(str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_LEFT)),
                             'dept_id' => $request->department_id,
                         ]
@@ -134,18 +97,52 @@ class CourseUploadController extends Controller
                         $student->assignRole('Student');
                     }
 
-                    // StudentWiseCourse insert only if same data doesn't exist
-                    $exists = StudentWiseCourse::where([
-                        'student_id' => $student->id,
+                    $studentList[] = $student;
+                }
+
+                
+                foreach ($courseRows as $row) {
+                    $course_name = trim($row[0]);
+                    $course_code = trim($row[1]);
+                    $teacher_name = trim($row[2]);
+                    $teacher_email = trim($row[3]);
+
+                    if (!$course_name || !$course_code || !$teacher_name || !$teacher_email)
+                        continue;
+
+                    $teacher = User::firstOrCreate(
+                        ['email' => $teacher_email],
+                        [
+                            'name' => $teacher_name,
+                            'password' => Hash::make(str_pad(mt_rand(0, 99999999), 8, '0', STR_PAD_LEFT)),
+                            'dept_id' => $request->department_id,
+                        ]
+                    );
+
+                    if (!$teacher->hasRole('Teacher')) {
+                        $teacher->assignRole('Teacher');
+                    }
+
+                    $course = Course::firstOrCreate(
+                        ['code' => $course_code],
+                        [
+                            'name' => $course_name,
+                            'created_by' => auth()->id(),
+                            'updated_by' => auth()->id(),
+                        ]
+                    );
+
+                    $twcExists = TeacherWiseCourse::where([
+                        'teacher_id' => $teacher->id,
                         'course_id' => $course->id,
                         'department_id' => $request->department_id,
                         'batch_id' => $request->batch_id,
                         'year' => $request->year,
                     ])->exists();
 
-                    if (!$exists) {
-                        StudentWiseCourse::create([
-                            'student_id' => $student->id,
+                    if (!$twcExists) {
+                        TeacherWiseCourse::create([
+                            'teacher_id' => $teacher->id,
                             'course_id' => $course->id,
                             'department_id' => $request->department_id,
                             'batch_id' => $request->batch_id,
@@ -153,6 +150,29 @@ class CourseUploadController extends Controller
                             'created_by' => auth()->id(),
                             'updated_by' => auth()->id(),
                         ]);
+                    }
+
+                   
+                    foreach ($studentList as $student) {
+                        $swcExists = StudentWiseCourse::where([
+                            'student_id' => $student->id,
+                            'course_id' => $course->id,
+                            'department_id' => $request->department_id,
+                            'batch_id' => $request->batch_id,
+                            'year' => $request->year,
+                        ])->exists();
+
+                        if (!$swcExists) {
+                            StudentWiseCourse::create([
+                                'student_id' => $student->id,
+                                'course_id' => $course->id,
+                                'department_id' => $request->department_id,
+                                'batch_id' => $request->batch_id,
+                                'year' => $request->year,
+                                'created_by' => auth()->id(),
+                                'updated_by' => auth()->id(),
+                            ]);
+                        }
                     }
                 }
 
