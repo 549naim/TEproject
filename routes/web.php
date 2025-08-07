@@ -94,5 +94,6 @@ Route::group([
     Route::post('/evaluation/settings/store', ['uses' => 'PortalController@evaluation_settings_store'])->name('evaluation.settings.store');
 
     Route::get('/send-email', ['uses' => 'PortalController@sendEmail'])->name('send.email');
+    Route::post('/send-filtered-email', ['uses' => 'PortalController@sendFilteredEmail'])->name('send.filtered.email');
 
 });

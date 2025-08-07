@@ -8,6 +8,7 @@ use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Department;
 use App\Models\EvaluationSetting;
+use App\Models\StudentWiseCourse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -217,11 +218,14 @@ class PortalController extends Controller
 
     public function evaluation_settings()
     {
+        $departments = Department::all();
+        $batches = Batch::all();
+        $courses = Course::all();
         $evaluationSetting = EvaluationSetting::latest()->first();
         if ($evaluationSetting) {
-            return view('evaluation.setting', compact('evaluationSetting'));
+            return view('evaluation.setting', compact('evaluationSetting', 'departments', 'batches', 'courses'));
         } else {
-            return view('evaluation.setting');
+            return view('evaluation.setting', compact('departments', 'batches', 'courses'));
         }
     }
 
@@ -247,25 +251,68 @@ class PortalController extends Controller
     {
         $subject = 'Teaching Evaluation Notice';
 
-        // Latest evaluation setting
         $setting = EvaluationSetting::latest()->first();
-
         if (!$setting) {
             return response()->json(['message' => 'No evaluation setting found.'], 404);
         }
-
         $startDate = \Carbon\Carbon::parse($setting->start_date)->format('F j, Y');
         $endDate = \Carbon\Carbon::parse($setting->end_date)->format('F j, Y');
 
-        $body = "Dear Student,\n\nPlease complete your teaching evaluation between **$startDate** and **$endDate**.\nClick the link below to log in and proceed:\n\n";
+        // $loginUrl = route('login');
 
         $users = User::all();
+        $studentEmails = [];
+
         foreach ($users as $user) {
-            if ($user->hasRole('Student')) {
-                Mail::to($user->email)->send(new NotifyStudentMail($subject, $body));
+            if ($user->hasRole('Student') && $user->email) {
+                $studentEmails[] = $user->email;
             }
         }
 
-        return response()->json(['message' => 'Emails sent to all students successfully.']);
+        if (empty($studentEmails)) {
+            return response()->json(['message' => 'No student emails found.'], 404);
+        }
+        // $bodyText = "Dear Student,\n\nPlease complete your teaching evaluation between <b>$startDate</b> and <b>$endDate</b>.\nClick the link below to log in and proceed.\nThank you.";
+
+        Mail::to('example1@gmail.com')
+            ->bcc($studentEmails)
+            ->cc(['example2@gmail.com'])
+            ->send(new NotifyStudentMail($subject, $startDate, $endDate));
+
+        return response()->json(['message' => 'Mail sent to all students successfully.']);
+    }
+
+    public function sendFilteredEmail(Request $request)
+    {
+        $request->validate([
+            'department_id' => 'required|exists:departments,id',
+            'batch_id' => 'required|exists:batches,id',
+            'year' => 'required',
+        ]);
+
+        $department = Department::findOrFail($request->department_id);
+        $batch = Batch::findOrFail($request->batch_id);
+
+        $studentIds = StudentWiseCourse::where('department_id', $department->id)
+            ->where('batch_id', $batch->id)
+            ->where('year', $request->year)
+            ->pluck('student_id');
+
+        $users = User::whereIn('id', $studentIds)->get();
+
+        if ($users->isEmpty()) {
+            return response()->json(['message' => 'No students found for the selected filters.'], 404);
+        }
+
+        $subject = 'Teaching Evaluation Notice';
+        $evaluationSetting = EvaluationSetting::latest()->first();
+        $startDate = \Carbon\Carbon::parse($evaluationSetting->start_date)->format('F j, Y');
+        $endDate = \Carbon\Carbon::parse($evaluationSetting->end_date)->format('F j, Y');
+
+        Mail::to('example1@gmail.com')
+            ->bcc($users->pluck('email'))
+            ->cc(['example2@gmail.com'])
+            ->send(new NotifyStudentMail($subject, $startDate, $endDate));
+        return response()->json(['message' => 'Mail sent to all students successfully.']);
     }
 }

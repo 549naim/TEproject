@@ -11,20 +11,25 @@ class NotifyStudentMail extends Mailable
     use Queueable, SerializesModels;
 
     public $subjectText;
-    public $bodyText;
+    public $startDate;
+    public $endDate;
 
-    public function __construct($subjectText, $bodyText)
+    public function __construct($subjectText, $startDate, $endDate)
     {
         $this->subjectText = $subjectText;
-        $this->bodyText = $bodyText;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
     public function build()
     {
-        return $this->subject($this->subjectText)
-                    ->view('emails.notify-student')
-                    ->with([
-                        'bodyText' => $this->bodyText,
-                    ]);
+        return $this
+            ->subject($this->subjectText)
+            ->view('emails.notify-student')
+            ->with([
+                'subjectText' => $this->subjectText,
+                'startDate' => $this->startDate,
+                'endDate' => $this->endDate,
+            ]);
     }
 }

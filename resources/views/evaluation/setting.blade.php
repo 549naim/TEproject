@@ -6,14 +6,15 @@
         <div class="row mb-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="mb-0">Evaluation Setting</h3>
-                <a href="" id="sendEmailBtn" class="btn btn-success">
+                <a href="" id="sendEmailBtn" class="btn btn-success btn-sm">
                     <i class="fa fa-envelope"></i> Send Email
                 </a>
             </div>
             @if (isset($evaluationSetting->start_date) && isset($evaluationSetting->end_date))
                 <div class="alert alert-success d-flex justify-content-between align-items-center p-3 rounded mb-3">
                     <h4 class="mb-0">
-                        Teaching Evaluation Date From <span id="evaluation_start">{{ $evaluationSetting->start_date }}</span> To
+                        Teaching Evaluation Date From <span
+                            id="evaluation_start">{{ $evaluationSetting->start_date }}</span> To
                         <span id="evaluation_end">{{ $evaluationSetting->end_date }}</span>
                     </h4>
                 </div>
@@ -44,6 +45,54 @@
                 </div>
             </form>
         </div>
+        <div class="card p-4">
+            <form action="{{ route('send.filtered.email') }}" method="POST" id="sendFilteredEmail">
+                @csrf
+
+                <div class="row g-3 align-items-end">
+                    <!-- Batch Year -->
+                    <div class="col-md-3">
+                        <label for="batch_year" class="form-label">Batch Year</label>
+                        <select class="form-control" id="batch_year" name="year" required>
+                            @for ($year = 2025; $year <= 2050; $year++)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col-md-3">
+                        <label for="department_id" class="form-label">Select Department</label>
+                        <select id="department_id" name="department_id" class="form-select" required>
+                            <option value="" selected disabled>-- Select Department --</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->id }}">{{ $department->name }} [{{ $department->code }}]
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Batch -->
+                    <div class="col-md-3">
+                        <label for="batch_id" class="form-label">Select Batch</label>
+                        <select id="batch_id" name="batch_id" class="form-select" required>
+                            <option value="" selected disabled>-- Select Batch --</option>
+                            @foreach ($batches as $batch)
+                                <option value="{{ $batch->id }}">{{ $batch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-md-3 d-flex justify-content-end align-items-end">
+                        <button id="sendFilterEmail" type="submit" class="btn btn-success btn-sm">
+                           <i class="fa fa-envelope"></i> Send Email
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
 
     </div>
 
@@ -83,7 +132,7 @@
                 var originalHtml = $btn.html();
                 $btn.prop('disabled', true).html(
                     '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...'
-                    );
+                );
 
                 $.ajax({
                     url: '/send-email',
@@ -109,6 +158,37 @@
                     }
                 });
 
+            });
+
+            $('#sendFilteredEmail').ajaxForm({
+                beforeSubmit: function() {
+                    // Show loading on submit button
+                    var $btn = $('#sendFilterEmail');
+                    $btn.prop('disabled', true).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...'
+                    );
+                    $('#sendFilteredEmail')[0].reset();
+                },
+                success: function(res) {
+                    showSuccessModal(res.message);
+                },
+                error: function(xhr) {
+                    var errors = xhr.responseJSON?.errors;
+                    var errorMessage = '';
+                    if (errors) {
+                        $.each(errors, function(key, value) {
+                            errorMessage += value[0] + '\n';
+                        });
+                    } else {
+                        errorMessage = 'An error occurred. Please try again.';
+                    }
+                    showErrorModal(errorMessage);
+                },
+                complete: function() {
+                    // Restore button state
+                    var $btn = $('#sendFilterEmail');
+                    $btn.prop('disabled', false).html('<i class="fa fa-envelope"></i> Send Email');
+                }
             });
 
 
