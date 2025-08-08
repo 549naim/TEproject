@@ -21,6 +21,18 @@ class AdminSeeder extends Seeder
             'role_edit',
             'role_delete',
             'role_permission_edit',
+
+            'admin_create',
+            'student_evaluation',
+            'teacher_evaluation',
+            'course_upload',
+            'department_management',
+            'batch_management',
+            'course_management',
+            'question_management',
+            'evaluation_setting',
+            'evaluation_report',
+            'dashboard',
         ];
 
         foreach ($permissions as $permission) {

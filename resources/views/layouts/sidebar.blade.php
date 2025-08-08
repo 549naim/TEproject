@@ -2,17 +2,20 @@
     <div class="navbar-wrapper">
         <div class="m-header">
             <a href="{{ url('/') }}" class="b-brand text-primary">
-                <img src="{{ asset('assets/images/logo.png') }}" class="img-fluid logo-lg" alt="logo" style="height:32px; width:auto; max-width:80px;">
+                <img src="{{ asset('assets/images/logo.png') }}" class="img-fluid logo-lg" alt="logo"
+                    style="height:32px; width:auto; max-width:80px;">
             </a>
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
+                @canany(['dashboard'])
                 <li class="pc-item">
                     <a href="{{ url('/') }}" class="pc-link">
-                        <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
+                        <span class="pc-micon"><i class="fas fa-tachometer-alt text-primary"></i></span>
                         <span class="pc-mtext">Dashboard</span>
                     </a>
                 </li>
+                @endcanany
 
 
 
@@ -31,15 +34,15 @@
 
                 @canany(['admin_create'])
                     <li class="pc-item pc-hasmenu">
-                        <a class="pc-link"><span class="pc-micon"><i class="fas fa-user-cog"></i></span><span
+                        <a class="pc-link"><span class="pc-micon"><i class="fas fa-user-cog text-primary"></i></span><span
                                 class="pc-mtext">User
                                 Management</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
                         <ul class="pc-submenu">
                             <li class="pc-item"><a class="pc-link" href="{{ route('admin.index') }}">User Management</a>
                             </li>
-                             @canany(['role_list', 'role_create', 'role_edit', 'role_delete', 'role_permission_edit'])
-                            <li class="pc-item"><a class="pc-link" href="{{ route('roles.index') }}">Role & Permission</a>
-                            </li>
+                            @canany(['role_list', 'role_create', 'role_edit', 'role_delete', 'role_permission_edit'])
+                                <li class="pc-item"><a class="pc-link" href="{{ route('roles.index') }}">Role & Permission</a>
+                                </li>
                             @endcanany
 
 
@@ -48,7 +51,7 @@
                 @endcanany
                 @canany(['department_management', 'batch_management', 'course_management'])
                     <li class="pc-item pc-hasmenu">
-                        <a class="pc-link"><span class="pc-micon"><i class="fas fa-user-cog"></i></span><span
+                        <a class="pc-link"><span class="pc-micon"><i class="fas fa-cog text-primary"></i></span><span
                                 class="pc-mtext">Portal
                                 Management</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
                         <ul class="pc-submenu">
@@ -57,7 +60,8 @@
                             <li class="pc-item"><a class="pc-link" href="{{ route('batches.index') }}">Batch</a></li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('courses.index') }}">Course</a></li>
 
-                            <li class="pc-item"><a class="pc-link" href="{{ route('evaluation.settings') }}">Evaluation Settings</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('evaluation.settings') }}">Evaluation
+                                    Settings</a></li>
 
 
                         </ul>
@@ -66,7 +70,7 @@
                 @canany(['question_management'])
                     <li class="pc-item">
                         <a href="{{ route('questions.index') }}" class="pc-link">
-                            <span class="pc-micon"><i class="fas fa-question-circle"></i></span>
+                            <span class="pc-micon"><i class="fas fa-question-circle text-primary"></i></span>
                             <span class="pc-mtext">Question Upload</span>
                         </a>
                     </li>
@@ -74,7 +78,7 @@
                 @canany(['course_upload'])
                     <li class="pc-item">
                         <a href="{{ route('courses.upload') }}" class="pc-link">
-                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-micon"><i class="fas fa-book text-primary"></i></span>
                             <span class="pc-mtext">Course Upload</span>
                         </a>
                     </li>
@@ -82,7 +86,7 @@
                 @canany(['teacher_evaluation'])
                     <li class="pc-item">
                         <a href="{{ route('evaluation.teacher') }}" class="pc-link">
-                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-micon"><i class="fas fa-book text-primary"></i></span>
                             <span class="pc-mtext">Course Evaluated</span>
                         </a>
                     </li>
@@ -90,10 +94,18 @@
                 @canany(['student_evaluation'])
                     <li class="pc-item">
                         <a href="{{ route('evaluation.student') }}" class="pc-link">
-                            <span class="pc-micon"><i class="fas fa-book"></i></span>
+                            <span class="pc-micon"><i class="fas fa-book text-primary"></i></span>
                             <span class="pc-mtext">Teaching Evaluation</span>
                         </a>
                     </li>
+                @endcanany
+                @canany(['evaluation_report'])
+                <li class="pc-item">
+                    <a href="{{ route('evaluation.report') }}" class="pc-link">
+                        <span class="pc-micon"><i class="fas fa-file-alt text-primary"></i></span>
+                        <span class="pc-mtext">Evaluation Report</span>
+                    </a>
+                </li>
                 @endcanany
             </ul>
 

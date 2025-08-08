@@ -23,7 +23,7 @@
 
 
             <div class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="year" class="form-label">Select Year</label>
                     <select id="year" name="year" class="form-select" required>
                         <option value="" disabled selected>-- Select Year --</option>
@@ -34,8 +34,18 @@
                         @endfor
                     </select>
                 </div>
+                <div class="col-md-4">
+                    <label for="department_id" class="form-label">Select Department</label>
+                    <select id="department_id" name="department_id" class="form-select" required>
+                        <option value="" selected disabled>-- Select Department --</option>
+                        @foreach ($departments as $department)
+                            <option value="{{ $department->id }}">{{ $department->name }} [{{ $department->code }}]
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label for="batch_id" class="form-label">Select Batch</label>
                     <select id="batch_id" name="batch_id" class="form-select" required>
                         <option value="" disabled selected>-- Select Batch --</option>
@@ -57,6 +67,7 @@
 
                             <th>Course Name</th>
                             <th>Course Code</th>
+                            <th>Course Teacher</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -136,22 +147,25 @@
         $(document).ready(function() {
             const yearSelect = $('#year');
             const batchSelect = $('#batch_id');
+            const departmentSelect = $('#department_id');
             const courseTableCard = $('#courseTableCard');
             const courseTableBody = $('#courseTableBody');
 
             function fetchCourses() {
                 let year = yearSelect.val();
                 let batch_id = batchSelect.val();
+                let department_id = departmentSelect.val();
 
-                if (!year && !batch_id) return;
+                if (!year && !batch_id && !department_id) return;
 
                 $.ajax({
-                    url: "{{ route('evaluation.teacher.course') }}",
+                    url: "{{ route('evaluation.teacher.report') }}",
                     type: "POST",
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         year: year,
-                        batch_id: batch_id
+                        batch_id: batch_id,
+                        department_id: department_id
                     },
                     beforeSend: function() {
                         courseTableBody.html('<tr><td colspan="4">Loading...</td></tr>');
@@ -171,20 +185,21 @@
                                     
                                     <td>${course.name}</td>
                                     <td>${course.code}</td>
+                                    <td>${course.teacher_name}</td>
                                     <td>
                                         ${
                                             `<button 
-                                                                                                            class="btn btn-sm btn-primary btn-evaluate"
-                                                                                                            data-course-id="${course.id}"
-                                                                                                            data-course-name="${course.name}"
-                                                                                                            data-department-id="${course.department_id}"
-                                                                                                            data-teacher-id="${course.teacher_id}"
-                                                                                                           
-                                                                                                            data-year="${course.year}"
-                                                                                                            data-batch-id="${course.batch_id}"
-                                                                                                        >
-                                                                                                            View Evaluation
-                                                                                                        </button>`
+                                                                                                                class="btn btn-sm btn-primary btn-evaluate"
+                                                                                                                data-course-id="${course.id}"
+                                                                                                                data-course-name="${course.name}"
+                                                                                                                data-department-id="${course.department_id}"
+                                                                                                                data-teacher-id="${course.teacher_id}"
+                                                                                                               
+                                                                                                                data-year="${course.year}"
+                                                                                                                data-batch-id="${course.batch_id}"
+                                                                                                            >
+                                                                                                                View Evaluation
+                                                                                                            </button>`
                                         }
                                     </td>
                                 </tr>

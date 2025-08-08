@@ -8,7 +8,9 @@ use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Department;
 use App\Models\EvaluationSetting;
+use App\Models\Question;
 use App\Models\StudentWiseCourse;
+use App\Models\TeacherWiseCourse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -22,6 +24,8 @@ class PortalController extends Controller
         $this->middleware('permission:department_management', ['only' => ['departmentIndex', 'departmentStore', 'departmentShow', 'departmentUpdate', 'departmentDelete']]);
         $this->middleware('permission:batch_management', ['only' => ['batchIndex', 'batchStore', 'batchShow', 'batchUpdate', 'batchDelete']]);
         $this->middleware('permission:course_management', ['only' => ['courseIndex', 'courseStore', 'courseShow', 'courseUpdate', 'courseDelete']]);
+        $this->middleware('permission:evaluation_setting', ['only' => ['evaluation_settings', 'evaluation_settings_store', 'sendEmail', 'sendFilteredEmail']]);
+        $this->middleware('permission:evaluation_report', ['only' => ['evaluation_report', 'evaluation_teacher_report']]);
     }
 
     public function departmentIndex()
@@ -314,5 +318,61 @@ class PortalController extends Controller
             ->cc(['example2@gmail.com'])
             ->send(new NotifyStudentMail($subject, $startDate, $endDate));
         return response()->json(['message' => 'Mail sent to all students successfully.']);
+    }
+
+    public function evaluation_report()
+    {
+        $departments = Department::all();
+        $batches = Batch::all();
+        $courses = Course::all();
+        $questions = Question::all();
+
+        return view('evaluation.report', compact('departments', 'batches', 'courses', 'questions'));
+    }
+
+    public function evaluation_teacher_report(Request $request)
+    {
+        $request->validate([
+            'year' => 'required',
+            'batch_id' => 'required',
+            'department_id' => 'required',
+        ]);
+
+
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $dept_id = $request->department_id;
+
+
+        $courseIds = TeacherWiseCourse::where('year', $year)
+            ->where('batch_id', $batch_id)
+            ->where('department_id', $dept_id)
+            ->pluck('course_id');
+
+        $courses = Course::whereIn('id', $courseIds)
+            ->get(['id', 'name', 'code'])
+            ->map(function ($course) use ($year, $batch_id, $dept_id) {
+                $teacher = TeacherWiseCourse::where('course_id', $course->id)
+                    ->where('year', $year)
+                    ->where('batch_id', $batch_id)
+                    ->where('department_id', $dept_id)
+                    ->first();
+
+                $teacher_id = $teacher ? $teacher->teacher_id : null;
+                $teacher_name = $teacher ? User::find($teacher_id)->name : 'N/A';
+
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'code' => $course->code,
+                    'department_id' => $dept_id,
+                    'teacher_id' => $teacher_id,
+                    'year' => $year,
+                    'batch_id' => $batch_id,
+                    'teacher_name' => $teacher_name,
+                ];
+            });
+
+        return response()->json($courses);
     }
 }

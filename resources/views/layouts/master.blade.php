@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Home</title>
+     <title>{{ config('app.name', 'IQAC') }}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -22,6 +22,15 @@
 
     <div class="pc-container">
         @yield('content')
+    </div>
+    <div class="pc-footer d-flex justify-content-center align-items-center">
+        <div class="pc-footer-wrapper">
+            <div class="pc-footer-content text-center">
+                <span class="text-muted text-center">
+                    © {{ date('Y') }}  All rights reserved <br> <a href="" target="">Institutional Quality Assurance Cell (IQAC), MBSTU</a>
+                </span>
+            </div>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>

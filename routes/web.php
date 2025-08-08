@@ -6,7 +6,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect('/home');
+        $user = Auth::user();
+
+        if ($user->hasRole('Student')) {
+            return redirect('/evaluation/student');
+        } elseif ($user->hasRole('Teacher')) {
+            return redirect('/evaluation/teacher');
+        } elseif ($user->hasRole(['SuperAdmin', 'Admin'])) {
+            return redirect('/home');
+        } else {
+            return redirect('/login');
+        }
     } else {
         return redirect('/login');
     }
@@ -96,4 +106,6 @@ Route::group([
     Route::get('/send-email', ['uses' => 'PortalController@sendEmail'])->name('send.email');
     Route::post('/send-filtered-email', ['uses' => 'PortalController@sendFilteredEmail'])->name('send.filtered.email');
 
+    Route::get('/evaluation/report', ['uses' => 'PortalController@evaluation_report'])->name('evaluation.report');
+    Route::post('/evaluation/teacher/report', ['uses' => 'PortalController@evaluation_teacher_report'])->name('evaluation.teacher.report');
 });

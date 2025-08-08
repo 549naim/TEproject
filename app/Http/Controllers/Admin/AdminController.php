@@ -27,7 +27,7 @@ class AdminController extends Controller
     {
         $this->middleware('permission:admin_create', ['only' => ['index', 'store', 'admin_edit', 'admin_update', 'admin_delete']]);
         $this->middleware('permission:student_evaluation', ['only' => ['evaluation_student', 'evaluation_student_course', 'evaluation_student_store']]);
-        $this->middleware('permission:teacher_evaluation', ['only' => ['evaluation_teacher', 'evaluation_teacher_course', 'evaluation_data']]);
+        $this->middleware('permission:teacher_evaluation', ['only' => ['evaluation_teacher', 'evaluation_teacher_course']]);
     }
 
     public function index(Request $request)
