@@ -278,9 +278,9 @@ class PortalController extends Controller
         }
         // $bodyText = "Dear Student,\n\nPlease complete your teaching evaluation between <b>$startDate</b> and <b>$endDate</b>.\nClick the link below to log in and proceed.\nThank you.";
 
-        Mail::to('example1@gmail.com')
+        Mail::to(env('MAIL_TO_ADDRESS'))
             ->bcc($studentEmails)
-            ->cc(['example2@gmail.com'])
+            ->cc(env('MAIL_CC_ADDRESS'))
             ->send(new NotifyStudentMail($subject, $startDate, $endDate));
 
         return response()->json(['message' => 'Mail sent to all students successfully.']);
@@ -313,9 +313,10 @@ class PortalController extends Controller
         $startDate = \Carbon\Carbon::parse($evaluationSetting->start_date)->format('F j, Y');
         $endDate = \Carbon\Carbon::parse($evaluationSetting->end_date)->format('F j, Y');
 
-        Mail::to('example1@gmail.com')
+
+        Mail::to(env('MAIL_TO_ADDRESS'))
             ->bcc($users->pluck('email'))
-            ->cc(['example2@gmail.com'])
+            ->cc(env('MAIL_CC_ADDRESS'))
             ->send(new NotifyStudentMail($subject, $startDate, $endDate));
         return response()->json(['message' => 'Mail sent to all students successfully.']);
     }
@@ -338,11 +339,9 @@ class PortalController extends Controller
             'department_id' => 'required',
         ]);
 
-
         $year = $request->year;
         $batch_id = $request->batch_id;
         $dept_id = $request->department_id;
-
 
         $courseIds = TeacherWiseCourse::where('year', $year)
             ->where('batch_id', $batch_id)

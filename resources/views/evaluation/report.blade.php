@@ -87,18 +87,37 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body overflow-auto" style="max-height: 90vh;">
+
+
+                <div class="modal-body overflow-auto" id="evaluation_data" style="max-height: 90vh;">
                     <div class="p-4">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Course Code:</strong> <span id="modalCourseCode"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Course Name:</strong> <span id="modalCourseName"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Department:</strong> <span id="modalDepartment"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Teacher:</strong> <span id="modalTeacher"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Year:</strong> <span id="modalYear"></span>
+                            </div>
+                        </div>
 
 
-                        @csrf
+
                         <input type="hidden" name="course_id" id="course_id">
                         <input type="hidden" name="department_id" id="department_id">
                         <input type="hidden" name="teacher_id" id="teacher_id">
 
                         <input type="hidden" id="year_hidden" name="year">
                         <input type="hidden" id="batch_id_hidden" name="batch_id">
-                        <table class="table">
+                        <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Question</th>
@@ -134,6 +153,12 @@
                                 id="totalStudents">0</span></p>
 
                     </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" id="evaluatePrint">Print</button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
@@ -189,17 +214,17 @@
                                     <td>
                                         ${
                                             `<button 
-                                                                                                                class="btn btn-sm btn-primary btn-evaluate"
-                                                                                                                data-course-id="${course.id}"
-                                                                                                                data-course-name="${course.name}"
-                                                                                                                data-department-id="${course.department_id}"
-                                                                                                                data-teacher-id="${course.teacher_id}"
-                                                                                                               
-                                                                                                                data-year="${course.year}"
-                                                                                                                data-batch-id="${course.batch_id}"
-                                                                                                            >
-                                                                                                                View Evaluation
-                                                                                                            </button>`
+                                                                                                                                        class="btn btn-sm btn-primary btn-evaluate"
+                                                                                                                                        data-course-id="${course.id}"
+                                                                                                                                        data-course-name="${course.name}"
+                                                                                                                                        data-department-id="${course.department_id}"
+                                                                                                                                        data-teacher-id="${course.teacher_id}"
+                                                                                                                                       
+                                                                                                                                        data-year="${course.year}"
+                                                                                                                                        data-batch-id="${course.batch_id}"
+                                                                                                                                    >
+                                                                                                                                        View Evaluation
+                                                                                                                                    </button>`
                                         }
                                     </td>
                                 </tr>
@@ -275,6 +300,11 @@
                         $('#ratingSum').text(response.total_average_sum);
                         $('#totalParticipants').text(response.total_students);
                         $('#totalStudents').text(response.total_enrolled_students);
+                        $('#modalCourseCode').text(response.course_code);
+                        $('#modalCourseName').text(response.course_name);
+                        $('#modalDepartment').text(response.department_name);
+                        $('#modalTeacher').text(response.teacher_name);
+                        $('#modalYear').text(response.year);
                         // Show Comments as bullet point list
                         if (response.comments && response.comments.length > 0) {
                             let commentBox =
@@ -293,6 +323,65 @@
                         console.error('Error fetching evaluation data:', xhr.responseText);
                     }
                 });
+            });
+
+            $(document).on('click', '#evaluatePrint', function() {
+                var printContents = document.getElementById('evaluation_data').innerHTML;
+                var printWindow = window.open('', '', 'height=800,width=1000');
+                printWindow.document.write('<html><head><title>Evaluation Data</title>');
+                // Inline Bootstrap and custom styles for modal body look
+                printWindow.document.write(
+                    `<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <style>
+                        body {
+                            background: #f8fafc;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .modal-content {
+                            border-radius: 0.5rem;
+                            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+                            background: #fff;
+                            margin: 40px auto;
+                            max-width: 900px;
+                            padding: 0;
+                        }
+                        .modal-header, .modal-footer {
+                            display: none;
+                        }
+                        .modal-body {
+                            border-radius: 0.5rem;
+                            background: #fff;
+                            padding: 1.5rem !important;
+                        }
+                        .p-4 { padding: 1.5rem !important; }
+                        .table { width: 100%; border-collapse: collapse; }
+                        .table-bordered th, .table-bordered td { border: 1px solid #dee2e6 !important; }
+                        .table thead th { background: #f1f1f1; }
+                        .fw-semibold, .font-semibold { font-weight: 600; }
+                        h6.fw-bold { margin-top: 1rem; }
+                        ul.ms-3 { margin-left: 1rem; }
+                        .row { display: flex; flex-wrap: wrap; margin-right: -12px; margin-left: -12px; }
+                        .col-md-6 { flex: 0 0 auto; width: 50%; padding-right: 12px; padding-left: 12px; }
+                        .mb-3 { margin-bottom: 1rem !important; }
+                        .mt-4 { margin-top: 1.5rem !important; }
+                        .text-right { text-align: right !important; }
+                    </style>`
+                );
+                printWindow.document.write('</head><body>');
+                printWindow.document.write(
+                    '<div class="modal-content"><div class="modal-body overflow-auto" style="max-height: 90vh;">'
+                    );
+                printWindow.document.write(printContents);
+                printWindow.document.write('</div></div>');
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(function() {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
             });
 
 

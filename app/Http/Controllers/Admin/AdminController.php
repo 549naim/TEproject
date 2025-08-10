@@ -363,6 +363,19 @@ class AdminController extends Controller
             'batch_id' => $batch_id,
         ])->distinct('student_id')->count('student_id');
 
+        // Get teacher name
+        $teacher = User::find($teacher_id);
+        $teacher_name = $teacher ? $teacher->name : null;
+
+        // Get course name and code
+        $course = Course::find($course_id);
+        $course_name = $course ? $course->name : null;
+        $course_code = $course ? $course->code : null;
+
+        // Get department name
+        $department = Department::find($department_id);
+        $department_name = $department ? $department->name : null;
+
         return response()->json([
             'status' => 'success',
             'ratings' => $ratings,
@@ -370,6 +383,11 @@ class AdminController extends Controller
             'comments' => $comments,
             'total_students' => $uniqueStudentCount,
             'total_enrolled_students' => $totalEnrolledStudents,
+            'teacher_name' => $teacher_name,
+            'course_name' => $course_name,
+            'course_code' => $course_code,
+            'department_name' => $department_name,
+            'year' => $year,
         ]);
     }
 }
