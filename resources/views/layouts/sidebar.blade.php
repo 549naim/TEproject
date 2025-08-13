@@ -3,7 +3,7 @@
         <div class="m-header">
             <a href="{{ url('/') }}" class="b-brand text-primary">
                 <img src="{{ asset('assets/images/logo.png') }}" class="img-fluid logo-lg" alt="logo"
-                    style="height:32px; width:auto; max-width:80px;">
+                    style="height:60px; width:180px;">
             </a>
         </div>
         <div class="navbar-content">
