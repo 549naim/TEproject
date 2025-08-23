@@ -24,14 +24,13 @@
             @yield('content')
         </main>
     </div>
-    <div class="pc-footer d-flex justify-content-center align-items-center">
-        <div class="pc-footer-wrapper">
-            <div class="pc-footer-content text-center">
-                <span class="text-muted text-center">
-                    © {{ date('Y') }}  All rights reserved <br> <a href="" target="">Institutional Quality Assurance Cell (IQAC), MBSTU</a>
-                </span>
-            </div>
-        </div>
+    <footer class="position-fixed bottom-0 w-100 bg-white shadow py-2 px-3">
+    <div class="text-center">
+        <span class="text-muted">
+            © {{ date('Y') }} All rights reserved <br>
+            Institutional Quality Assurance Cell (IQAC), MBSTU
+        </span>
     </div>
+</footer>
 </body>
 </html>
