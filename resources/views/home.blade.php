@@ -6,15 +6,17 @@
             border: 2px solid transparent;
             border-radius: 12px;
             background-image: linear-gradient(#fff, #fff),
-                              linear-gradient(45deg, #3d71e2c4, #536c97bd);
+                linear-gradient(45deg, #3d71e2c4, #536c97bd);
             background-origin: border-box;
             background-clip: content-box, border-box;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease-in-out;
         }
+
         .gradient-card:hover {
             transform: translateY(-4px);
         }
+
         .gradient-card-body {
             display: flex;
             justify-content: space-between;
@@ -23,15 +25,18 @@
             background: linear-gradient(135deg, #fdfbfb, #ebedee);
             border-radius: 10px;
         }
+
         .gradient-card-body h6 {
             font-size: 14px;
             color: #6c757d;
             margin-bottom: 4px;
         }
+
         .gradient-card-body h4 {
             font-weight: bold;
             margin: 0;
         }
+
         .gradient-icon {
             font-size: 32px;
             color: #2575fc;
