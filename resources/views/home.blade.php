@@ -131,7 +131,9 @@
                     <div class="gradient-card-body">
                         <div>
                             <h6>Last Evaluation Date</h6>
-                            <h5>{{ $evaluationDate->start_date }} To {{ $evaluationDate->end_date }}</h5>
+                            <h5>
+                                {{ $evaluationDate ? ($evaluationDate->start_date . ' To ' . $evaluationDate->end_date) : 'N/A' }}
+                            </h5>
                         </div>
                         <i class="fas fa-calendar-alt gradient-icon"></i>
                     </div>

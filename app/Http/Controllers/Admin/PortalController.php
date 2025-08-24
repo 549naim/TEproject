@@ -313,7 +313,7 @@ class PortalController extends Controller
         $startDate = \Carbon\Carbon::parse($evaluationSetting->start_date)->format('F j, Y');
         $endDate = \Carbon\Carbon::parse($evaluationSetting->end_date)->format('F j, Y');
 
-
+        dd($users->pluck('email'));
         Mail::to(env('MAIL_TO_ADDRESS'))
             ->bcc($users->pluck('email'))
             ->cc(env('MAIL_CC_ADDRESS'))
