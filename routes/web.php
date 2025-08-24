@@ -27,6 +27,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::resource('roles', RoleController::class);
     Route::post('/create-role', ['uses' => 'RoleController@createRole'])->name('create-role');
@@ -46,6 +47,7 @@ Route::group([
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/admin', ['uses' => 'AdminController@index'])->name('admin.index');
     Route::post('/admin/store', ['uses' => 'AdminController@store'])->name('admin.store');
@@ -60,15 +62,18 @@ Route::group([
     Route::get('/evaluation/student', ['uses' => 'AdminController@evaluation_student'])->name('evaluation.student');
     Route::post('/evaluation/student/course', ['uses' => 'AdminController@evaluation_student_course'])->name('evaluation.student.course');
     Route::post('/evaluation/student', ['uses' => 'AdminController@evaluation_student_store'])->name('evaluation.student.store');
+    Route::get('/courses/downloadSample', ['uses' => 'AdminController@downloadSample'])->name('courses.downloadSample');
 });
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::resource('questions', QuestionController::class);
 });
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/courses_upload', ['uses' => 'CourseUploadController@index'])->name('courses.upload');
     Route::post('/courses/import', ['uses' => 'CourseUploadController@importCourseData'])->name('courses.import');
@@ -81,6 +86,7 @@ Route::group([
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/departments', ['uses' => 'PortalController@departmentIndex'])->name('departments.index');
     Route::post('/departments_store', ['uses' => 'PortalController@departmentStore'])->name('departments.store');

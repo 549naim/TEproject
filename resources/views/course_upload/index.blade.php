@@ -21,12 +21,11 @@
         @endif
 
         <div class="row">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="mb-0">Upload Course Wise Data</h1>
-
-                {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#create_question">
-                    <i class="fas fa-plus-circle"></i> Create
-                </button> --}}
+            <div class="alert alert-success">
+                <a href="{{ route('courses.downloadSample') }}" class="alert-link">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Click here to download course upload sample excel file.
+                </a>
             </div>
 
         </div>

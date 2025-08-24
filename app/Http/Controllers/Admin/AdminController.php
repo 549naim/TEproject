@@ -390,4 +390,15 @@ class AdminController extends Controller
             'year' => $year,
         ]);
     }
+
+    public function downloadSample()
+    {
+        $filePath = public_path('assets/file/sample.xlsx');
+        if (file_exists($filePath)) {
+            return response()->download($filePath, 'sample.xlsx');
+        }
+        return response()->json(['error' => 'File not found.'], 404);
+    }
+
+
 }
