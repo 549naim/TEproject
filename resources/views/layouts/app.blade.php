@@ -24,13 +24,13 @@
             @yield('content')
         </main>
     </div>
-    {{-- <footer class="position-fixed bottom-0 w-100 bg-white shadow py-2 px-3">
+    <footer class="position-fixed bottom-0 w-100 bg-white shadow py-2 px-3">
     <div class="text-center">
         <span class="text-muted">
             © {{ date('Y') }} All rights reserved <br>
             Institutional Quality Assurance Cell (IQAC), MBSTU
         </span>
     </div>
-</footer> --}}
+</footer>
 </body>
 </html>
