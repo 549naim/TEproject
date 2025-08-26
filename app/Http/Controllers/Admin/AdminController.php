@@ -59,9 +59,9 @@ class AdminController extends Controller
                             <i class="fas fa-pen"></i>
                         </button>';
 
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_admin" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
-                        </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_admin" data-id="' . $row->id . '">
+                    //         <i class="fas fa-trash"></i>
+                    //     </button>';
                     return $btn;
                 })
                 ->rawColumns(['action', 'roles', 'department', 'roll_no'])
