@@ -22,7 +22,7 @@
         </p>
 
         <p style="font-size: 15px; color: #333333; line-height: 1.6; margin-bottom: 15px;">
-            On your first login, please click <strong> <a href="{{ url('/password/reset') }}" style="color: #e61616; text-decoration: underline;">“Forgot Password”</a>.</strong>
+            On your first time login, please click <strong> <a href="{{ url('/password/reset') }}" style="color: #e61616; text-decoration: underline;">“Forgot Password”</a> </strong>and set a new password to login.
             You must use your <strong>institutional email</strong> to log in.
         </p>
 
