@@ -3,7 +3,7 @@
 @section('content')
     <div class="pc-content">
 
-        <div class="row mb-3">
+        <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="mb-0">Evaluation Setting</h3>
                 <a href="" id="sendEmailBtn" class="btn btn-success btn-sm">
@@ -75,7 +75,7 @@
                     <!-- Batch -->
                     <div class="col-md-3">
                         <label for="batch_id" class="form-label">Select Batch</label>
-                        <select id="batch_id" name="batch_id" class="form-select" required>
+                        <select id="batch_id" name="batch_id" class="form-select">
                             <option value="" selected disabled>-- Select Batch --</option>
                             @foreach ($batches as $batch)
                                 <option value="{{ $batch->id }}">{{ $batch->name }}</option>
@@ -86,11 +86,35 @@
                     <!-- Submit Button -->
                     <div class="col-md-3 d-flex justify-content-end align-items-end">
                         <button id="sendFilterEmail" type="submit" class="btn btn-success btn-sm">
-                           <i class="fa fa-envelope"></i> Send Email
+                            <i class="fa fa-envelope"></i> Send Email
                         </button>
                     </div>
                 </div>
             </form>
+        </div>
+
+        <div class="card p-4 mb-5">
+            <h3 class="mb-3">Email Sending Records</h3>
+            <div class="col-md-12">
+
+                <div class="dt-responsive table-responsive">
+                    <table class="table table-bordered table-striped" id="email_record_table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Year</th>
+                                <th>Department</th>
+                                <th>Batch</th>
+                                <th>Email Subject</th>
+                                <th>Sending Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
 
 
@@ -98,6 +122,43 @@
 
     <script>
         $(document).ready(function() {
+
+            $(function() {
+
+                var table = $('#email_record_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: "{{ route('email.record') }}",
+                    columns: [{
+                            data: 'DT_RowIndex',
+                            name: 'id'
+                        },
+                        {
+                            data: 'year',
+                            name: 'year'
+                        },
+                        {
+                            data: 'department',
+                            name: 'department'
+                        },
+                        {
+                            data: 'batch',
+                            name: 'batch'
+                        },
+                        {
+                            data: 'email_subject',
+                            name: 'email_subject'
+                        },
+                        {
+                            data: 'sending_date',
+                            name: 'sending_date'
+                          
+                        },
+
+                    ]
+                });
+
+            });
 
             $('#evaluation_settings_form').ajaxForm({
                 beforeSubmit: function() {

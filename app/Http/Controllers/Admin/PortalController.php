@@ -7,6 +7,7 @@ use App\Mail\NotifyStudentMail;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Department;
+use App\Models\EmailRecord;
 use App\Models\EvaluationSetting;
 use App\Models\Question;
 use App\Models\StudentWiseCourse;
@@ -277,11 +278,20 @@ class PortalController extends Controller
             return response()->json(['message' => 'No student emails found.'], 404);
         }
         // $bodyText = "Dear Student,\n\nPlease complete your teaching evaluation between <b>$startDate</b> and <b>$endDate</b>.\nClick the link below to log in and proceed.\nThank you.";
+        $year = date('Y');
+        $departmentId = null;
+        $batchId = null;
 
         Mail::to(env('MAIL_TO_ADDRESS'))
             ->bcc($studentEmails)
             ->cc(env('MAIL_CC_ADDRESS'))
-            ->send(new NotifyStudentMail($subject, $startDate, $endDate));
+            ->send(new NotifyStudentMail($subject, $startDate, $endDate, $year, $departmentId, $batchId));
+        EmailRecord::create([
+            'year' => $year,
+            'department_id' => $departmentId,
+            'batch_id' => $batchId,
+            'email_subject' => $subject,
+        ]);
 
         return response()->json(['message' => 'Mail sent to all students successfully.']);
     }
@@ -290,22 +300,25 @@ class PortalController extends Controller
     {
         $request->validate([
             'department_id' => 'required|exists:departments,id',
-            'batch_id' => 'required|exists:batches,id',
             'year' => 'required',
+            'batch_id' => 'nullable|exists:batches,id',
         ]);
 
         $department = Department::findOrFail($request->department_id);
-        $batch = Batch::findOrFail($request->batch_id);
 
-        $studentIds = StudentWiseCourse::where('department_id', $department->id)
-            ->where('batch_id', $batch->id)
-            ->where('year', $request->year)
-            ->pluck('student_id');
+        $query = StudentWiseCourse::where('department_id', $department->id)
+            ->where('year', $request->year);
+
+        if ($request->filled('batch_id')) {
+            $query->where('batch_id', $request->batch_id);
+        }
+
+        $studentIds = $query->pluck('student_id');
 
         $users = User::whereIn('id', $studentIds)->get();
 
         if ($users->isEmpty()) {
-            return response()->json(['message' => 'No students found for the selected filters.'], 404);
+            return response()->json(['message' => 'No students found for the selected filters.']);
         }
 
         $subject = 'Teaching Evaluation Notice';
@@ -313,11 +326,21 @@ class PortalController extends Controller
         $startDate = \Carbon\Carbon::parse($evaluationSetting->start_date)->format('F j, Y');
         $endDate = \Carbon\Carbon::parse($evaluationSetting->end_date)->format('F j, Y');
 
+        $year = $request->year;
+        $departmentId = $request->department_id;
+        $batchId = $request->batch_id;
 
         Mail::to(env('MAIL_TO_ADDRESS'))
             ->bcc($users->pluck('email'))
             ->cc(env('MAIL_CC_ADDRESS'))
-            ->send(new NotifyStudentMail($subject, $startDate, $endDate));
+            ->send(new NotifyStudentMail($subject, $startDate, $endDate, $year, $departmentId, $batchId));
+        EmailRecord::create([
+            'year' => $year,
+            'department_id' => $departmentId,
+            'batch_id' => $batchId,
+            'email_subject' => $subject,
+        ]);
+
         return response()->json(['message' => 'Mail sent to all students successfully.']);
     }
 
@@ -373,5 +396,36 @@ class PortalController extends Controller
             });
 
         return response()->json($courses);
+    }
+
+    public function emailRecord()
+    {
+        if (request()->ajax()) {
+            $records = EmailRecord::orderBy('id', 'desc');
+
+            return DataTables::of($records)
+                ->addIndexColumn()
+                ->addColumn('department', function ($row) {
+                    if ($row->department_id) {
+                        $department = Department::find($row->department_id);
+                        return $department ? $department->name : '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                    return '<span class="badge bg-info">All</span>';
+                })
+                ->addColumn('batch', function ($row) {
+                    if ($row->batch_id) {
+                        $batch = Batch::find($row->batch_id);
+                        return $batch ? $batch->name : '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                    return '<span class="badge bg-info">All</span>';
+                })
+                ->addColumn('sending_date', function ($row) {
+                    return \Carbon\Carbon::parse($row->created_at)->format('d M, Y ');
+                })
+                ->rawColumns(['department', 'batch'])  
+                ->make(true);
+        }
+
+        return view('course.setting');
     }
 }

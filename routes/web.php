@@ -114,4 +114,5 @@ Route::group([
 
     Route::get('/evaluation/report', ['uses' => 'PortalController@evaluation_report'])->name('evaluation.report');
     Route::post('/evaluation/teacher/report', ['uses' => 'PortalController@evaluation_teacher_report'])->name('evaluation.teacher.report');
+    Route::get('/email/record', ['uses' => 'PortalController@emailRecord'])->name('email.record');
 });
