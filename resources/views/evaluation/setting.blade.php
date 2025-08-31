@@ -200,6 +200,7 @@
                     type: 'GET',
                     success: function(res) {
                         showSuccessModal(res.message);
+                        $('#email_record_table').DataTable().ajax.reload();
                     },
                     error: function(xhr) {
                         var errors = xhr.responseJSON?.errors;
@@ -232,6 +233,7 @@
                 },
                 success: function(res) {
                     showSuccessModal(res.message);
+                    $('#email_record_table').DataTable().ajax.reload();
                 },
                 error: function(xhr) {
                     var errors = xhr.responseJSON?.errors;
