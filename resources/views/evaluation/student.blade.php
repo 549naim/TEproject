@@ -71,10 +71,10 @@
                     </table>
                 </div>
             </div>
-    </div>
+    
     @include('evaluation.evaluation_form')
     @endif
-
+</div>
 
 
     {{-- CSRF Token for AJAX --}}
