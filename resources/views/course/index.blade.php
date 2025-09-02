@@ -48,7 +48,7 @@
                 <div class="col-md-4">
                     <label for="batch_id" class="form-label">Select Batch</label>
                     <select id="batch_id" name="batch_id" class="form-select" required>
-                        <option value="" disabled selected>-- Select Batch --</option>
+                        <option value="0" selected>-- Select Batch --</option>
                         @foreach ($batches as $batch)
                             <option value="{{ $batch->id }}">{{ $batch->name }} [{{ $batch->year }}]</option>
                         @endforeach
