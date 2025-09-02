@@ -40,9 +40,9 @@ class PortalController extends Controller
                             <i class="fas fa-pen"></i>
                         </button>';
 
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_department" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
-                        </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_department" data-id="' . $row->id . '">
+                    //         <i class="fas fa-trash"></i>
+                    //     </button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -62,9 +62,9 @@ class PortalController extends Controller
                             <i class="fas fa-pen"></i>
                         </button>';
 
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_batch" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
-                        </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_batch" data-id="' . $row->id . '">
+                    //         <i class="fas fa-trash"></i>
+                    //     </button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -84,9 +84,9 @@ class PortalController extends Controller
                             <i class="fas fa-pen"></i>
                         </button>';
 
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_course" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
-                        </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_course" data-id="' . $row->id . '">
+                    //         <i class="fas fa-trash"></i>
+                    //     </button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])

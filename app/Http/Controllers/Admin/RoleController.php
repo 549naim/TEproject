@@ -129,10 +129,10 @@ class RoleController extends Controller
                                                 data-bs-target="#edit_role_name" id="edit_role" data-id="' . $row->id . '">
                                                 <i class="fas fa-pen"></i>
                                             </button>';
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_role"
-                                                data-id="' . $row->id . '">
-                                                <i class="fas fa-trash"></i>
-                                            </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_role"
+                    //                             data-id="' . $row->id . '">
+                    //                             <i class="fas fa-trash"></i>
+                    //                         </button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -152,10 +152,10 @@ class RoleController extends Controller
                                                 data-id="' . $row->id . '">
                                                 <i class="fas fa-pen"></i>
                                             </button>';
-                    $btn .= ' <button type="button" class="delete btn btn-danger btn-sm" id="delete_permission"
-                                                data-id="' . $row->id . '">
-                                                <i class="fas fa-trash"></i>
-                                            </button>';
+                    // $btn .= ' <button type="button" class="delete btn btn-danger btn-sm" id="delete_permission"
+                    //                             data-id="' . $row->id . '">
+                    //                             <i class="fas fa-trash"></i>
+                    //                         </button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])

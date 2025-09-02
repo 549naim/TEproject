@@ -24,7 +24,7 @@
         @yield('content')
     </div>
    
-<footer class=" bottom-0 w-100 bg-white mt-5 py-2 px-3">
+<footer class="w-100 bg-white mt-5 py-2 px-3 {{ request()->is('evaluation/student') ? 'position-fixed bottom-0' : '' }}">
     <div class="text-center">
         <span class="text-muted">
             © {{ date('Y') }} All rights reserved <br>
