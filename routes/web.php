@@ -102,9 +102,9 @@ Route::group([
 
     Route::get('/courses', ['uses' => 'PortalController@courseIndex'])->name('courses.index');
     Route::post('/courses_store', ['uses' => 'PortalController@courseStore'])->name('courses.store');
-    Route::get('/courses/{id}', ['uses' => 'PortalController@courseShow'])->name('courses.show');
-    Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
-    Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
+    // Route::get('/courses/{id}', ['uses' => 'PortalController@courseShow'])->name('courses.show');
+    // Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
+    // Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
 
     Route::get('/evaluation/settings', ['uses' => 'PortalController@evaluation_settings'])->name('evaluation.settings');
     Route::post('/evaluation/settings/store', ['uses' => 'PortalController@evaluation_settings_store'])->name('evaluation.settings.store');
@@ -114,5 +114,6 @@ Route::group([
 
     Route::get('/evaluation/report', ['uses' => 'PortalController@evaluation_report'])->name('evaluation.report');
     Route::post('/evaluation/teacher/report', ['uses' => 'PortalController@evaluation_teacher_report'])->name('evaluation.teacher.report');
+    Route::post('/course/student/list', ['uses' => 'PortalController@course_student_list'])->name('student.list');
     Route::get('/email/record', ['uses' => 'PortalController@emailRecord'])->name('email.record');
 });

@@ -75,24 +75,10 @@ class PortalController extends Controller
 
     public function courseIndex()
     {
-        if (request()->ajax()) {
-            $questions = Course::orderBy('id', 'desc');
-            return DataTables::of($questions)
-                ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    $btn = '<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#edit_course_modal" id="edit_course" data-id="' . $row->id . '">
-                            <i class="fas fa-pen"></i>
-                        </button>';
-
-                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_course" data-id="' . $row->id . '">
-                    //         <i class="fas fa-trash"></i>
-                    //     </button>';
-                    return $btn;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
-        return view('course.index');
+        $departments = Department::all();
+        $batches = Batch::all();
+        $courses = Course::all();
+        return view('course.index', compact('departments', 'batches', 'courses'));
     }
 
     public function departmentStore(Request $request)
@@ -181,16 +167,46 @@ class PortalController extends Controller
 
     public function courseStore(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:courses,name',
-            'code' => 'required|string|max:10|unique:courses,code',
+       $request->validate([
+            'year' => 'required',
+            'batch_id' => 'required',
+            'department_id' => 'required',
         ]);
 
-        $data = $request->all();
-        $data['created_by'] = auth()->id();
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $dept_id = $request->department_id;
 
-        Course::create($data);
-        return redirect()->route('courses.index')->with('success', 'Course created successfully.');
+        $courseIds = TeacherWiseCourse::where('year', $year)
+            ->where('batch_id', $batch_id)
+            ->where('department_id', $dept_id)
+            ->pluck('course_id');
+
+        $courses = Course::whereIn('id', $courseIds)
+            ->get(['id', 'name', 'code'])
+            ->map(function ($course) use ($year, $batch_id, $dept_id) {
+                $teacher = TeacherWiseCourse::where('course_id', $course->id)
+                    ->where('year', $year)
+                    ->where('batch_id', $batch_id)
+                    ->where('department_id', $dept_id)
+                    ->first();
+
+                $teacher_id = $teacher ? $teacher->teacher_id : null;
+                $teacher_name = $teacher ? User::find($teacher_id)->name : 'N/A';
+
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'code' => $course->code,
+                    'department_id' => $dept_id,
+                    'teacher_id' => $teacher_id,
+                    'year' => $year,
+                    'batch_id' => $batch_id,
+                    'teacher_name' => $teacher_name,
+                ];
+            });
+
+        return response()->json($courses);
     }
 
     public function courseShow($id)
@@ -428,4 +444,48 @@ class PortalController extends Controller
 
         return view('course.setting');
     }
+
+    public function course_student_list(Request $request){
+
+        $request->validate([
+            'year' => 'required',
+            'batch_id' => 'required',
+            'department_id' => 'required',
+            'course_id' => 'required',
+            'teacher_id' => 'required',
+            'course_name' => 'required'
+        ]);
+
+        $year = $request->year;
+        $batch_id = $request->batch_id;
+        $department_id = $request->department_id;
+        $course_id = $request->course_id;
+        $teacher_id = $request->teacher_id;
+        $course_name = $request->course_name;
+
+        // Fetch student IDs from StudentWiseCourse based on filters
+        $studentIds = StudentWiseCourse::where('year', $year)
+            ->where('batch_id', $batch_id)
+            ->where('department_id', $department_id)
+            ->where('course_id', $course_id)
+            ->pluck('student_id');
+
+        $total_students = $studentIds->count();
+
+        // Fetch student details from User table
+        $student_data = User::whereIn('id', $studentIds)
+            ->get(['id', 'name', 'email', 'roll_no']);
+        $teacher_name = User::find($teacher_id)->name;
+        $course_code = Course::find($course_id)->code;
+
+        return response()->json([
+            'total_students' => $total_students,
+            'student_data' => $student_data,
+            'teacher_name' => $teacher_name,
+            'course_name' => $course_name,
+            'course_code' => $course_code
+        ]);
+    }
+
+
 }
