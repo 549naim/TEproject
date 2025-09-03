@@ -224,7 +224,7 @@ class AdminController extends Controller
             'ratings.*' => 'required|integer|min:1|max:5',
         ], [
             'ratings.required' => 'All qs rating must be given',
-            'ratings.*.required' => 'All qs rating must be given',
+            'ratings.*.required' => 'Rating is required for all questions',
         ], [
             'comment_data' => 'nullable|string|max:1000',
         ]);
