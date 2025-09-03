@@ -222,6 +222,10 @@ class AdminController extends Controller
             'batch_id' => 'required|exists:batches,id',
             'ratings' => 'required|array',
             'ratings.*' => 'required|integer|min:1|max:5',
+        ], [
+            'ratings.required' => 'All qs rating must be given',
+            'ratings.*.required' => 'All qs rating must be given',
+        ], [
             'comment_data' => 'nullable|string|max:1000',
         ]);
 
