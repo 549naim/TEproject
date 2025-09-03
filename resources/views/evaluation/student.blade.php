@@ -177,6 +177,7 @@
                     fetchCourses();
                     $('.star-rating .star').css('color', 'gray');
                      $('#store_evaluation_form_form')[0].reset();
+                     location.reload();
                 },
                 error: function(xhr) {
                     var errors = xhr.responseJSON?.errors;
