@@ -110,7 +110,9 @@ Route::group([
     Route::post('/evaluation/settings/store', ['uses' => 'PortalController@evaluation_settings_store'])->name('evaluation.settings.store');
 
     Route::get('/send-email', ['uses' => 'PortalController@sendEmail'])->name('send.email');
+    Route::get('/send-email-all_teacher', ['uses' => 'PortalController@sendEmailAllTeacher'])->name('send.email.all_teacher');
     Route::post('/send-filtered-email', ['uses' => 'PortalController@sendFilteredEmail'])->name('send.filtered.email');
+    Route::post('/send-filter-email-teacher', ['uses' => 'PortalController@sendFilteredEmailTeacher'])->name('send.filtered.email.teacher');
 
     Route::get('/evaluation/report', ['uses' => 'PortalController@evaluation_report'])->name('evaluation.report');
     Route::post('/evaluation/teacher/report', ['uses' => 'PortalController@evaluation_teacher_report'])->name('evaluation.teacher.report');

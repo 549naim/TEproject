@@ -4,20 +4,43 @@
     <div class="pc-content">
 
         <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            {{-- <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="mb-0">Evaluation Setting</h3>
                 <a href="" id="sendEmailBtn" class="btn btn-success btn-sm">
                     <i class="fa fa-envelope"></i> Send Email
                 </a>
+            </div> --}}
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0">Evaluation Setting</h3>
+                <div class="btn-group">
+                    <a href="" title="Send Email to All Student" id="sendEmailBtn" class="btn btn-info btn-sm me-1 ">
+                        <i class="fa fa-envelope"></i> Student
+                    </a>
+                    @if (!$isEvaluationOpen)
+                    <a href="" title="Send Email to All Teacher" id="teacherEmailBtn" class="btn btn-warning btn-sm">
+                        <i class="fa fa-envelope"></i> Teacher
+                    </a>
+                    @endif
+                </div>
             </div>
             @if (isset($evaluationSetting->start_date) && isset($evaluationSetting->end_date))
-                <div class="alert alert-success d-flex justify-content-between align-items-center p-3 rounded mb-3">
-                    <h4 class="mb-0">
-                        Teaching Evaluation Date From <span
-                            id="evaluation_start">{{ $evaluationSetting->start_date }}</span> To
-                        <span id="evaluation_end">{{ $evaluationSetting->end_date }}</span>
-                    </h4>
-                </div>
+                @if ($isEvaluationOpen)
+                    <div id="setiing_date_shedule"
+                        class="alert alert-success d-flex justify-content-between align-items-center p-3 rounded mb-3">
+                        <h4 class="mb-0">
+                            Teaching Evaluation Date From <span
+                                id="evaluation_start">{{ $evaluationSetting->start_date }}</span> To
+                            <span id="evaluation_end">{{ $evaluationSetting->end_date }}</span>
+                        </h4>
+                    </div>
+                @else
+                    <div id="evaluation_closed"
+                        class="alert alert-warning d-flex justify-content-between align-items-center p-3 rounded mb-3">
+                        <h4 class="mb-0">
+                            Teaching Evaluation Closed!
+                        </h4>
+                    </div>
+                @endif
             @endif
         </div>
 
@@ -84,10 +107,24 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="col-md-3 d-flex justify-content-end align-items-end">
+                    {{-- <div class="col-md-3 d-flex justify-content-end align-items-end">
                         <button id="sendFilterEmail" type="submit" class="btn btn-success btn-sm">
                             <i class="fa fa-envelope"></i> Send Email
                         </button>
+                    </div> --}}
+                    <div class="col-md-3 d-flex justify-content-end align-items-end">
+                        <div class="btn-group">
+                            <button title="Send email to students" id="sendFilterEmail" type="submit"
+                                class="btn btn-info btn-sm me-1">
+                                <i class="fa fa-envelope"></i> Student
+                            </button>
+                             @if (!$isEvaluationOpen)
+                            <button title="Send email to teachers" id="sendTeacherEmail" type="button"
+                                class="btn btn-warning btn-sm">
+                                <i class="fa fa-envelope"></i> Teacher
+                            </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </form>
@@ -152,7 +189,7 @@
                         {
                             data: 'sending_date',
                             name: 'sending_date'
-                          
+
                         },
 
                     ]
@@ -169,6 +206,17 @@
                     if (res.data) {
                         $('#evaluation_start').text(res.data.start_date);
                         $('#evaluation_end').text(res.data.end_date);
+                        // if (res.isEvaluationOpen) {
+                        //     $('#setiing_date_shedule').html(
+                        //         '<h4 class="mb-0">Teaching Evaluation Date From <span id="evaluation_start">' +
+                        //         res.data.start_date + '</span> To <span id="evaluation_end">' + res
+                        //         .data
+                        //         .end_date + '</span></h4>');
+                        // } else {
+                        //     $('#setiing_date_shedule').html(
+                        //         '<h4 class="mb-0">Teaching Evaluation Closed!</h4>');
+
+                        // }
                     }
                 },
                 error: function(xhr) {
@@ -197,6 +245,43 @@
 
                 $.ajax({
                     url: '/send-email',
+                    type: 'GET',
+                    success: function(res) {
+                        showSuccessModal(res.message);
+                        $('#email_record_table').DataTable().ajax.reload();
+                    },
+                    error: function(xhr) {
+                        var errors = xhr.responseJSON?.errors;
+                        var errorMessage = '';
+                        if (errors) {
+                            $.each(errors, function(key, value) {
+                                errorMessage += value[0] + '\n';
+                            });
+                        } else {
+                            errorMessage = 'An error occurred. Please try again.';
+                        }
+                        showErrorModal(errorMessage);
+                    },
+                    complete: function() {
+                        // Restore button state
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+
+            });
+
+            $('body').on('click', '#teacherEmailBtn', function(e) {
+                e.preventDefault();
+
+                // Show loading icon on button
+                var $btn = $('#teacherEmailBtn');
+                var originalHtml = $btn.html();
+                $btn.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...'
+                );
+
+                $.ajax({
+                    url: '/send-email-all_teacher',
                     type: 'GET',
                     success: function(res) {
                         showSuccessModal(res.message);
@@ -252,6 +337,49 @@
                     var $btn = $('#sendFilterEmail');
                     $btn.prop('disabled', false).html('<i class="fa fa-envelope"></i> Send Email');
                 }
+            });
+
+            $('body').on('click', '#sendTeacherEmail', function(e) {
+                e.preventDefault();
+
+                // Show loading icon on button
+                var $btn = $('#sendTeacherEmail');
+                var originalHtml = $btn.html();
+                $btn.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...'
+                );
+
+                $.ajax({
+                    url: '/send-filter-email-teacher',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        year: $('#batch_year').val(),
+                        department_id: $('#department_id').val(),
+                        batch_id: $('#batch_id').val()
+                    },
+                    success: function(res) {
+                        showSuccessModal(res.message);
+                        $('#email_record_table').DataTable().ajax.reload();
+                    },
+                    error: function(xhr) {
+                        var errors = xhr.responseJSON?.errors;
+                        var errorMessage = '';
+                        if (errors) {
+                            $.each(errors, function(key, value) {
+                                errorMessage += value[0] + '\n';
+                            });
+                        } else {
+                            errorMessage = 'An error occurred. Please try again.';
+                        }
+                        showErrorModal(errorMessage);
+                    },
+                    complete: function() {
+                        // Restore button state
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+
             });
 
 
