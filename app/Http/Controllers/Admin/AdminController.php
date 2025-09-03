@@ -214,6 +214,18 @@ class AdminController extends Controller
 
     public function evaluation_student_store(Request $request)
     {   
+        $request->validate([
+            'department_id' => 'required|exists:departments,id',
+            'teacher_id' => 'required|exists:users,id',
+            'course_id' => 'required|exists:courses,id',
+            'year' => 'required|integer',
+            'batch_id' => 'required|exists:batches,id',
+            'ratings' => 'required|array',
+            'ratings.*' => 'required|integer|min:1|max:5',
+            'comment_data' => 'nullable|string|max:1000',
+        ]);
+
+         // Get the currently logged-in student ID
         $studentId = Auth::id();  // Currently logged in student
 
         // Prepare common conditions to check duplication
