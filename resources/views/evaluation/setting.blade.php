@@ -12,16 +12,7 @@
             </div> --}}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="mb-0">Evaluation Setting</h3>
-                <div class="btn-group">
-                    <a href="" title="Send Email to All Student" id="sendEmailBtn" class="btn btn-info btn-sm me-1 ">
-                        <i class="fa fa-envelope"></i> Student
-                    </a>
-                    @if (!$isEvaluationOpen)
-                    <a href="" title="Send Email to All Teacher" id="teacherEmailBtn" class="btn btn-warning btn-sm">
-                        <i class="fa fa-envelope"></i> Teacher
-                    </a>
-                    @endif
-                </div>
+
             </div>
             @if (isset($evaluationSetting->start_date) && isset($evaluationSetting->end_date))
                 @if ($isEvaluationOpen)
@@ -44,7 +35,7 @@
             @endif
         </div>
 
-        <div class="card p-4">
+        <div class="">
             <form action="{{ route('evaluation.settings.store') }}" method="POST" id="evaluation_settings_form">
                 @csrf
 
@@ -68,6 +59,24 @@
                 </div>
             </form>
         </div>
+        <div class="card mt-3 p-4">
+            {{-- <h4 class="mb-3">Send Email to All Student and Teacher</h4> --}}
+            <div class="d-flex justify-content-between align-items-center">
+                <label class="mb-0 fw-bold">Send Email to All Student and Teacher</label>
+                <div class="btn-group">
+                    <a href="" title="Send Email to All Student" id="sendEmailBtn" class="btn btn-info btn-sm me-1">
+                        <i class="fa fa-envelope"></i> Student
+                    </a>
+                    @if (!$isEvaluationOpen)
+                        <a href="" title="Send Email to All Teacher" id="teacherEmailBtn"
+                            class="btn btn-warning btn-sm">
+                            <i class="fa fa-envelope"></i> Teacher
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+
         <div class="card p-4">
             <form action="{{ route('send.filtered.email') }}" method="POST" id="sendFilteredEmail">
                 @csrf
@@ -112,19 +121,21 @@
                             <i class="fa fa-envelope"></i> Send Email
                         </button>
                     </div> --}}
-                    <div class="col-md-3 d-flex justify-content-end align-items-end">
+                    <div class=" row col-md-3 d-flex justify-content-end align-items-end">
+                        <label class="ms-3 mb-0 fw-bold">Send Email To Specific Student And Teacher</label>
                         <div class="btn-group">
                             <button title="Send email to students" id="sendFilterEmail" type="submit"
                                 class="btn btn-info btn-sm me-1">
                                 <i class="fa fa-envelope"></i> Student
                             </button>
-                             @if (!$isEvaluationOpen)
-                            <button title="Send email to teachers" id="sendTeacherEmail" type="button"
-                                class="btn btn-warning btn-sm">
-                                <i class="fa fa-envelope"></i> Teacher
-                            </button>
+                            @if (!$isEvaluationOpen)
+                                <button title="Send email to teachers" id="sendTeacherEmail" type="button"
+                                    class="btn btn-warning btn-sm">
+                                    <i class="fa fa-envelope"></i> Teacher
+                                </button>
                             @endif
                         </div>
+
                     </div>
                 </div>
             </form>
