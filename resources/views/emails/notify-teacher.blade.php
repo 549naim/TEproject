@@ -13,12 +13,12 @@
         </h2>
 
         <p style="font-size: 15px; color: #333333; line-height: 1.6; margin-bottom: 15px;">
-            Dear Student,
+            Dear Teacher,
         </p>
 
         <p style="font-size: 15px; color: #333333; line-height: 1.6; margin-bottom: 15px;">
-            Please complete your teaching evaluation between 
-            <strong>{{ $startDate }}</strong> and <strong>{{ $endDate }}</strong>.
+            Teaching evaluation reports are now available for your review. Please log in to the system to access and see your evaluation reports. 
+            
         </p>
 
         <p style="font-size: 15px; color: #333333; line-height: 1.6; margin-bottom: 15px;">

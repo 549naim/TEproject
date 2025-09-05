@@ -71,10 +71,10 @@
                     </table>
                 </div>
             </div>
-    </div>
-    @include('evaluation.evaluation_form')
-    @endif
 
+            @include('evaluation.evaluation_form')
+        @endif
+    </div>
 
 
     {{-- CSRF Token for AJAX --}}
@@ -124,17 +124,17 @@
                                             course.evaluated
                                             ? `<button class="btn btn-sm btn-success" disabled>Evaluated</button>`
                                             : `<button 
-                                                                    class="btn btn-sm btn-primary btn-evaluate"
-                                                                    data-course-id="${course.id}"
-                                                                    data-course-name="${course.name}"
-                                                                    data-department-id="${course.department_id}"
-                                                                    data-teacher-id="${course.teacher_id}"
-                                                                    data-student-id="${course.student_id}"
-                                                                    data-year="${course.year}"
-                                                                    data-batch-id="${course.batch_id}"
-                                                                >
-                                                                    Evaluate
-                                                                </button>`
+                                                                            class="btn btn-sm btn-primary btn-evaluate"
+                                                                            data-course-id="${course.id}"
+                                                                            data-course-name="${course.name}"
+                                                                            data-department-id="${course.department_id}"
+                                                                            data-teacher-id="${course.teacher_id}"
+                                                                            data-student-id="${course.student_id}"
+                                                                            data-year="${course.year}"
+                                                                            data-batch-id="${course.batch_id}"
+                                                                        >
+                                                                            Evaluate
+                                                                        </button>`
                                         }
                                     </td>
                                 </tr>
@@ -176,6 +176,8 @@
                     showSuccessModal(res.message);
                     fetchCourses();
                     $('.star-rating .star').css('color', 'gray');
+                    $('#store_evaluation_form_form')[0].reset();
+                    resetRatings()
                 },
                 error: function(xhr) {
                     var errors = xhr.responseJSON?.errors;
@@ -193,23 +195,31 @@
             });
 
         });
+
+        function resetRatings() {
+            // Reset all hidden input values
+            $('#question_list input[type="hidden"]').val('');
+
+            // Reset all stars to gray
+            $('#question_list .star').css('color', 'gray');
+        }
     </script>
     <script>
-    $(document).ready(function () {
-        $('.star-rating .star').on('click', function () {
-            const value = $(this).data('value');
-            const parent = $(this).closest('.star-rating');
-            const questionId = parent.data('question-id');
+        $(document).ready(function() {
+            $('.star-rating .star').on('click', function() {
+                const value = $(this).data('value');
+                const parent = $(this).closest('.star-rating');
+                const questionId = parent.data('question-id');
 
-            parent.find('.star').css('color', 'gray');
+                parent.find('.star').css('color', 'gray');
 
-            for (let i = 1; i <= value; i++) {
-                parent.find(`#star_${questionId}_${i}`).css('color', 'gold');
-            }
+                for (let i = 1; i <= value; i++) {
+                    parent.find(`#star_${questionId}_${i}`).css('color', 'gold');
+                }
 
-            $(`#rating_input_${questionId}`).val(value);
+                $(`#rating_input_${questionId}`).val(value);
+            });
         });
-    });
-</script>
+    </script>
 
 @endsection

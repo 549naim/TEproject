@@ -27,6 +27,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::resource('roles', RoleController::class);
     Route::post('/create-role', ['uses' => 'RoleController@createRole'])->name('create-role');
@@ -46,6 +47,7 @@ Route::group([
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/admin', ['uses' => 'AdminController@index'])->name('admin.index');
     Route::post('/admin/store', ['uses' => 'AdminController@store'])->name('admin.store');
@@ -60,15 +62,18 @@ Route::group([
     Route::get('/evaluation/student', ['uses' => 'AdminController@evaluation_student'])->name('evaluation.student');
     Route::post('/evaluation/student/course', ['uses' => 'AdminController@evaluation_student_course'])->name('evaluation.student.course');
     Route::post('/evaluation/student', ['uses' => 'AdminController@evaluation_student_store'])->name('evaluation.student.store');
+    Route::get('/courses/downloadSample', ['uses' => 'AdminController@downloadSample'])->name('courses.downloadSample');
 });
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::resource('questions', QuestionController::class);
 });
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/courses_upload', ['uses' => 'CourseUploadController@index'])->name('courses.upload');
     Route::post('/courses/import', ['uses' => 'CourseUploadController@importCourseData'])->name('courses.import');
@@ -81,6 +86,7 @@ Route::group([
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/departments', ['uses' => 'PortalController@departmentIndex'])->name('departments.index');
     Route::post('/departments_store', ['uses' => 'PortalController@departmentStore'])->name('departments.store');
@@ -96,16 +102,20 @@ Route::group([
 
     Route::get('/courses', ['uses' => 'PortalController@courseIndex'])->name('courses.index');
     Route::post('/courses_store', ['uses' => 'PortalController@courseStore'])->name('courses.store');
-    Route::get('/courses/{id}', ['uses' => 'PortalController@courseShow'])->name('courses.show');
-    Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
-    Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
+    // Route::get('/courses/{id}', ['uses' => 'PortalController@courseShow'])->name('courses.show');
+    // Route::post('/courses_update', ['uses' => 'PortalController@courseUpdate'])->name('courses.update');
+    // Route::get('/courses_delete/{id}', ['uses' => 'PortalController@courseDelete'])->name('courses.delete');
 
     Route::get('/evaluation/settings', ['uses' => 'PortalController@evaluation_settings'])->name('evaluation.settings');
     Route::post('/evaluation/settings/store', ['uses' => 'PortalController@evaluation_settings_store'])->name('evaluation.settings.store');
 
     Route::get('/send-email', ['uses' => 'PortalController@sendEmail'])->name('send.email');
+    Route::get('/send-email-all_teacher', ['uses' => 'PortalController@sendEmailAllTeacher'])->name('send.email.all_teacher');
     Route::post('/send-filtered-email', ['uses' => 'PortalController@sendFilteredEmail'])->name('send.filtered.email');
+    Route::post('/send-filter-email-teacher', ['uses' => 'PortalController@sendFilteredEmailTeacher'])->name('send.filtered.email.teacher');
 
     Route::get('/evaluation/report', ['uses' => 'PortalController@evaluation_report'])->name('evaluation.report');
     Route::post('/evaluation/teacher/report', ['uses' => 'PortalController@evaluation_teacher_report'])->name('evaluation.teacher.report');
+    Route::post('/course/student/list', ['uses' => 'PortalController@course_student_list'])->name('student.list');
+    Route::get('/email/record', ['uses' => 'PortalController@emailRecord'])->name('email.record');
 });

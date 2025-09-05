@@ -26,7 +26,7 @@
             @yield('content')
         </main>
     </div>
-    <footer class="position-fixed bottom-0 w-100 bg-white shadow py-2 px-3">
+    <footer class="position-fixed bottom-0 w-100 bg-white py-2 px-3">
         <div class="text-center">
             <span class="text-muted">
                 © {{ date('Y') }} All rights reserved <br>
@@ -36,4 +36,8 @@
     </footer>
 </body>
 
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> a1d6c1a5dc054631b8057c623c03d9c31cf4b9ea

@@ -59,9 +59,9 @@ class AdminController extends Controller
                             <i class="fas fa-pen"></i>
                         </button>';
 
-                    $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_admin" data-id="' . $row->id . '">
-                            <i class="fas fa-trash"></i>
-                        </button>';
+                    // $btn .= ' <button type="button" class="btn btn-danger btn-sm" id="delete_admin" data-id="' . $row->id . '">
+                    //         <i class="fas fa-trash"></i>
+                    //     </button>';
                     return $btn;
                 })
                 ->rawColumns(['action', 'roles', 'department', 'roll_no'])
@@ -214,6 +214,22 @@ class AdminController extends Controller
 
     public function evaluation_student_store(Request $request)
     {   
+        $request->validate([
+            'department_id' => 'required|exists:departments,id',
+            'teacher_id' => 'required|exists:users,id',
+            'course_id' => 'required|exists:courses,id',
+            'year' => 'required|integer',
+            'batch_id' => 'required|exists:batches,id',
+            'ratings' => 'required|array',
+            'ratings.*' => 'required|integer|min:1|max:5',
+        ], [
+            'ratings.required' => 'All qs rating must be given',
+            'ratings.*.required' => 'Rating is required for all questions',
+        ], [
+            'comment_data' => 'nullable|string|max:1000',
+        ]);
+
+         // Get the currently logged-in student ID
         $studentId = Auth::id();  // Currently logged in student
 
         // Prepare common conditions to check duplication
@@ -390,4 +406,15 @@ class AdminController extends Controller
             'year' => $year,
         ]);
     }
+
+    public function downloadSample()
+    {
+        $filePath = public_path('assets/file/sample.xlsx');
+        if (file_exists($filePath)) {
+            return response()->download($filePath, 'sample.xlsx');
+        }
+        return response()->json(['error' => 'File not found.'], 404);
+    }
+
+
 }

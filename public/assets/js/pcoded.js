@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // feather icon end
   
   // remove pre-loader start
-  setTimeout(function () {
-    document.querySelector('.loader-bg').remove();
-  }, 400);
+  // setTimeout(function () {
+  //   document.querySelector('.loader-bg').remove();
+  // }, 400);
 
   // remove pre-loader end
   if (document.querySelector('body').hasAttribute('data-pc-layout')) {

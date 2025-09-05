@@ -9,12 +9,12 @@
         <div class="navbar-content">
             <ul class="pc-navbar">
                 @canany(['dashboard'])
-                <li class="pc-item">
-                    <a href="{{ url('/') }}" class="pc-link">
-                        <span class="pc-micon"><i class="fas fa-tachometer-alt text-primary"></i></span>
-                        <span class="pc-mtext">Dashboard</span>
-                    </a>
-                </li>
+                    <li class="pc-item">
+                        <a href="{{ url('/') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-tachometer-alt text-primary"></i></span>
+                            <span class="pc-mtext">Dashboard</span>
+                        </a>
+                    </li>
                 @endcanany
 
 
@@ -49,7 +49,7 @@
                         </ul>
                     </li>
                 @endcanany
-                @canany(['department_management', 'batch_management', 'course_management'])
+                @canany(['department_management', 'batch_management', 'course_management', 'question_management','course_upload'])
                     <li class="pc-item pc-hasmenu">
                         <a class="pc-link"><span class="pc-micon"><i class="fas fa-cog text-primary"></i></span><span
                                 class="pc-mtext">Portal
@@ -60,29 +60,37 @@
                             <li class="pc-item"><a class="pc-link" href="{{ route('batches.index') }}">Batch</a></li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('courses.index') }}">Course</a></li>
 
-                            <li class="pc-item"><a class="pc-link" href="{{ route('evaluation.settings') }}">Evaluation
-                                    Settings</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('questions.index') }}">Question Upload</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('courses.upload') }}">Course Upload</a></li>
 
 
                         </ul>
                     </li>
                 @endcanany
-                @canany(['question_management'])
+                @canany(['evaluation_setting'])
+                    <li class="pc-item">
+                        <a href="{{ route('evaluation.settings') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-question-circle text-primary"></i></span>
+                            <span class="pc-mtext">Evaluation Request</span>
+                        </a>
+                    </li>
+                @endcanany
+                {{-- @canany([''])
                     <li class="pc-item">
                         <a href="{{ route('questions.index') }}" class="pc-link">
                             <span class="pc-micon"><i class="fas fa-question-circle text-primary"></i></span>
                             <span class="pc-mtext">Question Upload</span>
                         </a>
                     </li>
-                @endcanany
-                @canany(['course_upload'])
+                @endcanany --}}
+                {{-- @canany(['course_upload'])
                     <li class="pc-item">
                         <a href="{{ route('courses.upload') }}" class="pc-link">
                             <span class="pc-micon"><i class="fas fa-book text-primary"></i></span>
                             <span class="pc-mtext">Course Upload</span>
                         </a>
                     </li>
-                @endcanany
+                @endcanany --}}
                 @canany(['teacher_evaluation'])
                     <li class="pc-item">
                         <a href="{{ route('evaluation.teacher') }}" class="pc-link">
@@ -100,12 +108,12 @@
                     </li>
                 @endcanany
                 @canany(['evaluation_report'])
-                <li class="pc-item">
-                    <a href="{{ route('evaluation.report') }}" class="pc-link">
-                        <span class="pc-micon"><i class="fas fa-file-alt text-primary"></i></span>
-                        <span class="pc-mtext">Evaluation Report</span>
-                    </a>
-                </li>
+                    <li class="pc-item">
+                        <a href="{{ route('evaluation.report') }}" class="pc-link">
+                            <span class="pc-micon"><i class="fas fa-file-alt text-primary"></i></span>
+                            <span class="pc-mtext">Evaluation Report</span>
+                        </a>
+                    </li>
                 @endcanany
             </ul>
 
