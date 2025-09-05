@@ -37,7 +37,7 @@ class RoleController extends Controller
             'name' => 'required',
         ]);
         $role = Role::create(['name' => $request->input('name')]);
-        return response()->json(["message" =>  "Role Created Successfuly !"]);
+        return response()->json(["message" => "Role Created Successfuly !"]);
         // return redirect()->back()->with('success','Role created successfully');
     }
     public function createPermission(Request $request)
@@ -46,7 +46,7 @@ class RoleController extends Controller
             'name' => 'required',
         ]);
         $role = Permission::create(['name' => $request->input('name')]);
-        return response()->json(["message" =>  "Permission Created Successfuly !"]);
+        return response()->json(["message" => "Permission Created Successfuly !"]);
         // return redirect()->back()->with('success','Permission Created Successfuly !');
     }
 
@@ -55,7 +55,7 @@ class RoleController extends Controller
         $role = Role::find($id);
         $role->delete();
         // return redirect()->back()->with('success','Role deleted successfully');
-        return response()->json(["message" =>  "Role deleted Successfuly !"]);
+        return response()->json(["message" => "Role deleted Successfuly !"]);
     }
 
     public function permission_delete($id)
@@ -63,7 +63,7 @@ class RoleController extends Controller
         $role = Permission::find($id);
         $role->delete();
         // return redirect()->back()->with('success','Permission deleted Successfuly !');
-        return response()->json(["message" =>  "Permission deleted Successfuly !"]);
+        return response()->json(["message" => "Permission deleted Successfuly !"]);
     }
     public function role_edit($id)
     {
@@ -91,7 +91,7 @@ class RoleController extends Controller
         $role->name = $request->input('name');
         $role->save();
         // return redirect()->back()->with('success','Role Updated Successfuly !');
-        return response()->json(["message" =>  "Role Updated Successfuly !"]);
+        return response()->json(["message" => "Role Updated Successfuly !"]);
     }
 
     public function permission_update(Request $request)
@@ -103,7 +103,7 @@ class RoleController extends Controller
         $role = Permission::find($request->input('permission_id'));
         $role->name = $request->input('name');
         $role->save();
-        return response()->json(["message" =>  "Permission Updated Successfuly !"]);
+        return response()->json(["message" => "Permission Updated Successfuly !"]);
         // return redirect()->back()->with('success','Permission Updated Successfuly !');
     }
 
@@ -192,13 +192,25 @@ class RoleController extends Controller
     {
         $this->validate($request, [
             'role_id' => 'required',
-            'permission' => 'required',
+            'permission' => 'nullable|array', // Accepts null or array
         ]);
 
-        $role = Role::find($request->input('role_id'));
+        $role = Role::findOrFail($request->input('role_id'));
+
+        // Optional: update other role fields if needed
         $role->name = $role->name;
         $role->save();
-        $role->permissions()->sync($request->input('permission'));
-        return response()->json(["message" =>  "Role Wise Permissions Updated Successfuly !"]);
+
+        // Sync only if permission is provided
+        if ($request->has('permission') && is_array($request->input('permission'))) {
+            $role->permissions()->sync($request->input('permission'));
+        } else {
+            $role->permissions()->sync([]); // Optionally detach all if not provided
+        }
+
+        return response()->json([
+            "message" => "Role-wise permissions updated successfully!"
+        ]);
     }
+
 }

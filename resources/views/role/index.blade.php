@@ -27,10 +27,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="container px-5 mx-5 ">
+                    <div class="container px-4 mx-3 ">
                         <div class="row">
                             @foreach ($permissions as $permission)
-                                <div class="col-4">
+                                <div class="col-6">
                                     <input id="permission{{ $permission->id }}" class="form-check-input" type="checkbox"
                                         name="permission[]" value="{{ $permission->id }}">
                                     <label class="form-check-label">{{ $permission->name }}
