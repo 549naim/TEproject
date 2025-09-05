@@ -187,30 +187,35 @@ class RoleController extends Controller
         return view('pages.role.edit', compact('role', 'permission', 'rolePermissions'));
     }
 
-
     public function update(Request $request, $id)
     {
         $this->validate($request, [
             'role_id' => 'required',
-            'permission' => 'nullable|array', // Accepts null or array
+            // 'permission' => 'nullable|array',
+            'permission' => 'required',
         ]);
 
         $role = Role::findOrFail($request->input('role_id'));
 
-        // Optional: update other role fields if needed
-        $role->name = $role->name;
+        // Prevent user from updating their own role
+        if ($role->users()->where('id', Auth::id())->exists()) {
+            return response()->json([
+                "message" => "You cannot update your own role."
+            ], 403);
+        }
+
         $role->save();
 
-        // Sync only if permission is provided
         if ($request->has('permission') && is_array($request->input('permission'))) {
             $role->permissions()->sync($request->input('permission'));
         } else {
-            $role->permissions()->sync([]); // Optionally detach all if not provided
+            $role->permissions()->sync([]);
         }
 
         return response()->json([
             "message" => "Role-wise permissions updated successfully!"
         ]);
     }
+
 
 }
